@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             var scope = rememberCoroutineScope()
-            SideNav(drawerState = drawerState, scope = scope)
+            SideNav(drawerState = drawerState, scope =  scope)
         }
     }
 }

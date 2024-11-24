@@ -30,6 +30,7 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.data.hourItems
+import com.example.padel.ViewModels.CalendarViewModel
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -54,7 +55,7 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Co
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HourSelectionGrid(modifier: Modifier) {
+fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     var initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     LazyVerticalGrid(
@@ -77,10 +78,17 @@ fun HourSelectionGrid(modifier: Modifier) {
                             MotionEvent.ACTION_DOWN -> {
                                 selected = true
                                 color = if (color == initialColor) secondaryColor else initialColor
+                                if (color == secondaryColor) {
+                                    viewModel.buttonPressedState = true
+                                }
+
                             }
 
                             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                                 selected = false
+                                if (color == initialColor) {
+                                    viewModel.buttonPressedState = false
+                                }
                             }
                         }
 
