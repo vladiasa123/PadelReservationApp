@@ -25,7 +25,7 @@ fun LazyCalendar() {
 }
 
 @Composable
-fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Color, selected: Boolean ) {
+fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Color ) {
     val color = remember { mutableStateOf(colorChanging) }
     Column(
         modifier = modifier

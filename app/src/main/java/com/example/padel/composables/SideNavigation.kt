@@ -1,5 +1,14 @@
 package com.example.padel.composables
 
+import android.util.Log
+import android.view.MotionEvent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -22,15 +31,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.padel.ViewModels.CalendarViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SideNav(drawerState: DrawerState, scope: CoroutineScope) {
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
@@ -73,21 +91,39 @@ fun SideNav(drawerState: DrawerState, scope: CoroutineScope) {
             }
 
         }, content = { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)){
+            Column(modifier = Modifier.padding(paddingValues)) {
                 Text(
                     "Choose a date",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 10.dp, bottom = 5.dp)
                 )
+                val viewModel: CalendarViewModel = viewModel()
                 PadelDatesLazy(
-                    modifier = Modifier,
+                    modifier = Modifier, viewModel = viewModel
                 )
                 Text(
                     "Choose a hour",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 40.dp)
                 )
-                    HourSelectionGrid(Modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).border(2.dp, MaterialTheme.colorScheme.inverseOnSurface))
+                val density = LocalDensity.current
+                AnimatedVisibility(
+                    visible = viewModel.pressedState,
+                    enter = slideInVertically(
+                        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
+                    ) + expandVertically(
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    HourSelectionGrid(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 10.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface)
+                    )
+                }
             }
         })
 

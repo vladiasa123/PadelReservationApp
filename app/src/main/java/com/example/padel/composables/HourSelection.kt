@@ -1,6 +1,7 @@
 package com.example.padel.composables
 
 import android.view.MotionEvent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,21 +24,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.data.hourItems
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HourSelection(modifier: Modifier = Modifier, hour: String) {
+fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Color) {
     Box(
         modifier = Modifier
             .width(5.dp)
             .height(25.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.onTertiary), contentAlignment = Alignment.Center
+            .background(colorChanging), contentAlignment = Alignment.Center
+
 
     ) {
         Text(
@@ -51,7 +54,7 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HourSelectionGrid(Modifier: Modifier) {
+fun HourSelectionGrid(modifier: Modifier) {
     var initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     LazyVerticalGrid(
@@ -61,14 +64,31 @@ fun HourSelectionGrid(Modifier: Modifier) {
         modifier = Modifier.padding(15.dp)
     ) {
         items(hourItems) { hourItems ->
-            HourSelection(hour = hourItems.hour)
-            }
+            var color by remember { mutableStateOf(initialColor) }
+            val animateColors by animateColorAsState(targetValue = color)
+            var selected by remember { mutableStateOf(false) }
+            val scale = animateFloatAsState(if (selected) 0.5f else 1f)
+            HourSelection(hour = hourItems.hour,
+                colorChanging = animateColors,
+                modifier = Modifier
+                    .scale(scale.value)
+                    .pointerInteropFilter {
+                        when (it.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                selected = true
+                                color = if (color == initialColor) secondaryColor else initialColor
+                            }
+
+                            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                                selected = false
+                            }
+                        }
+
+
+                        true
+                    })
         }
     }
-
-
-@Preview
-@Composable
-fun HourSelectionPreview() {
-    HourSelectionGrid(Modifier.padding())
 }
+
+

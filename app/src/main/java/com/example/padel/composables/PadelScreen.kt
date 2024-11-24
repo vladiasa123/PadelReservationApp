@@ -1,6 +1,7 @@
 package com.example.padel.composables
 
 import android.view.MotionEvent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -23,15 +24,15 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import com.example.data.calendarItems
+import com.example.padel.ViewModels.CalendarViewModel
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun PadelDatesLazy(modifier: Modifier = Modifier) {
+fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) {
     val initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     var selected by remember { mutableStateOf(false) }
-    var color by remember { mutableStateOf(initialColor) }
     Box(
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp)
@@ -48,11 +49,11 @@ fun PadelDatesLazy(modifier: Modifier = Modifier) {
                 val scale = animateFloatAsState(if (selected) 0.5f else 1f)
                 val state = rememberLazyListState()
                 val stateScrolling = state.isScrollInProgress
+                val animateColors by animateColorAsState(targetValue = color)
                 CalendarItem(month = item.month,
                     day = item.dayNumber,
                     dayText = item.day,
-                    colorChanging = color,
-                    selected = selected,
+                    colorChanging = animateColors,
                     modifier = Modifier
                         .scale(scale.value)
                         .padding(5.dp)
@@ -63,16 +64,30 @@ fun PadelDatesLazy(modifier: Modifier = Modifier) {
                                     MotionEvent.ACTION_DOWN -> {
                                         selected = true
                                         color = if (color == initialColor) secondaryColor else initialColor
+                                        if (color == secondaryColor) {
+                                            viewModel.pressedState = true
+                                        }
+
                                     }
                                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                                         selected = false
+                                        if (color == initialColor) {
+                                            viewModel.pressedState = false
+                                        }
+
                                     }
                                 }
+
                             }
                             true
                         }
+
                 )
             }
         }
     }
 }
+
+
+
+
