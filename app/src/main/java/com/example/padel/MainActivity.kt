@@ -7,7 +7,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.rememberCoroutineScope
-import com.example.padel.composables.SideNav
+import com.example.padel.MainApp.SideNav
 
 
 class MainActivity : ComponentActivity() {
