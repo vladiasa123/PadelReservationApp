@@ -27,10 +27,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.data.hourItems
 import com.example.padel.ViewModels.CalendarViewModel
+import com.example.padel.data.hourItems
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -58,11 +59,18 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Co
 fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     var initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
+    val configuration = LocalConfiguration.current
+
+    val screenWidthDp = configuration.screenWidthDp
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 100.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.padding(15.dp)
+        modifier = if (screenWidthDp > 600) {
+            Modifier.padding(100.dp)
+        } else {
+            Modifier.padding(15.dp)
+        }
     ) {
         items(hourItems) { hourItems ->
             var color by remember { mutableStateOf(initialColor) }

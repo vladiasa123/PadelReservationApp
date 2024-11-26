@@ -1,5 +1,15 @@
 package com.example.padel.composables
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,66 +43,94 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier) {
+fun LoginPage(navController: NavHostController) {
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
-        Column {
-            Text(
-                "Welcome",
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                fontSize = 50.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.background
-            )
-            Text(
-                "Back",
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(start = 10.dp, top = 10.dp),
-                fontSize = 50.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.background
-            )
+
+        var visible by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            visible = true
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.BottomCenter)
+        AnimatedVisibility(visible = visible,
+            enter = slideInHorizontally(animationSpec = tween(durationMillis = 1000)) { fullWidth ->
+                -fullWidth / 3
+            } + fadeIn(
+                animationSpec = tween(durationMillis = 200)
+            ),
+            exit = slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessHigh)) {
+                200
+            } + fadeOut()) {
+            Column {
+                Text(
+                    "Welcome",
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                    fontSize = 50.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.background
+                )
+                Text(
+                    "Back",
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.padding(start = 10.dp, top = 10.dp),
+                    fontSize = 50.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.background
+                )
+            }
+
+        }
+        AnimatedVisibility(visible = visible, enter = slideInVertically(
+            animationSpec = tween(durationMillis = 1000)
+        ) { fullHeight ->
+            fullHeight
+        } + fadeIn(
+            animationSpec = tween(durationMillis = 200)
+        ), exit = slideOutVertically(
+            animationSpec = spring(stiffness = Spring.StiffnessHigh)
         ) {
-            Box(
+            200
+        } + fadeOut()) {
+            Column(
                 modifier = Modifier
-                    .height(550.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
-                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.BottomCenter)
             ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 50.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                        .height(550.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
-                    TextFieldWithIcons(modifier = Modifier, "Email or Username", Icons.Filled.Email)
-                    TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock)
-                    Text("Forgot password?", modifier = Modifier.padding(start = 160.dp))
-                    Button(
-                        onClick = { /*TODO*/ },
+                    Column(
                         modifier = Modifier
-                            .padding(top = 100.dp)
-                            .width(270.dp)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(5.dp)
+                            .fillMaxSize()
+                            .padding(top = 50.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        Text("Sign up")
+                        TextFieldWithIcons(
+                            modifier = Modifier, "Email or Username", Icons.Filled.Email
+                        )
+                        TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock)
+                        Text("Forgot password?", modifier = Modifier.padding(start = 160.dp))
+                        Button(
+                            onClick = { navController.navigate("screenB") },
+                            modifier = Modifier
+                                .padding(top = 100.dp)
+                                .width(270.dp)
+                                .height(40.dp),
+                            shape = RoundedCornerShape(5.dp)
+                        ) {
+                            Text("Sign up")
+                        }
                     }
                 }
-
-
             }
         }
     }
@@ -124,10 +162,3 @@ fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVecto
     )
 }
 
-
-@Preview
-@Composable
-fun LoginPrev() {
-    LoginPage()
-
-}

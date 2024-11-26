@@ -1,4 +1,4 @@
-package com.example.data
+package com.example.padel.data
 
 // Data class with the month field as a String to represent month names.
 data class Calendar(

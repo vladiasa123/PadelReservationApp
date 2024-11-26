@@ -1,4 +1,4 @@
-package com.example.data
+package com.example.padel.data
 
 data class Hours(
     val hour: String

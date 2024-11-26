@@ -7,152 +7,139 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.composables.AvailabilityButton
+import com.example.padel.composables.BottomNavigation
 import com.example.padel.composables.HourSelectionGrid
 import com.example.padel.composables.PadelDatesLazy
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
-@Composable
-fun SideNav(drawerState: DrawerState, scope: CoroutineScope) {
-    ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
-        ModalDrawerSheet {
-            IconButton(onClick = { scope.launch { drawerState.close() } }) {
-                Icon(imageVector = Icons.Filled.Close, contentDescription = "Close Menu")
-            }
-            Text("Drawer title", modifier = Modifier.padding(16.dp))
-            NavigationDrawerItem(label = { Text(text = "Drawer Item") },
-                selected = false,
-                onClick = {
-                    scope.launch {
-                        if (drawerState.isClosed) {
-                            drawerState.open()
-                        } else {
-                            drawerState.close()
-                        }
-                    }
-                })
-        }
-    }) {
-
-        Scaffold(topBar = {
-            Row(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                    Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu Icon")
-                }
-                Text(
-                    text = "Padel",
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(start = 8.dp),
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-
-        }, content = { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)) {
-                Text(
-                    "Choose a date",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp)
-                )
-                val viewModel: CalendarViewModel = viewModel()
-                PadelDatesLazy(
-                    modifier = Modifier, viewModel = viewModel
-                )
-                Text(
-                    "Choose a hour",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 40.dp)
-                )
-                val density = LocalDensity.current
-                AnimatedVisibility(
-                    visible = viewModel.pressedState,
-                    enter = slideInVertically(
-                        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
-                    ) + expandVertically(
-                        expandFrom = Alignment.Top
-                    ) + fadeIn(
-                        initialAlpha = 0.3f
-                    ),
-                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
-                ) {
-                    HourSelectionGrid(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 10.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
-                        viewModel = viewModel
-                    )
-                }
-                AnimatedVisibility(
-                    visible = viewModel.buttonPressedState,
-                    enter = slideInVertically(
-                        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
-                    ) + expandVertically(
-                        expandFrom = Alignment.Top
-                    ) + fadeIn(
-                        initialAlpha = 0.3f
-                    ),
-                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
-                ) {
-                    Box(modifier = Modifier.padding(top = 50.dp)){
-                        AvailabilityButton()
-                    }
-
-                }
-
-            }
-        })
-
-    }
-}
+import com.example.padel.composables.SideNavigation
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdaptiveNavigationScreen() {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    Scaffold(topBar = {
+        if (screenWidthDp > 600) {
+            SideNavigation()
+        }
+    }, bottomBar = {
+        if (screenWidthDp < 600) {
+            BottomNavigation()
+        }
+    }, content = { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SideNav(paddingValues = paddingValues)
+        }
+    })
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    val density = LocalDensity.current
+    val contentModifier = if (screenWidthDp < 600) {
+        Modifier.padding(16.dp)
+    } else {
+        Modifier
+            .padding()
+            .fillMaxSize()
+    }
+    var animationForVisibility =
+        slideInVertically(initialOffsetY = { with(density) { -40.dp.roundToPx() } }) + expandVertically(
+            expandFrom = Alignment.Top
+        ) + fadeIn(
+
+            initialAlpha = 0.3f
+        )
+    Scaffold(modifier = Modifier.fillMaxSize(), content = { paddingValues ->
+        Column(
+            modifier = contentModifier.then(
+                Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+            ),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Choose a date",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 10.dp, bottom = 5.dp)
+            )
+            val viewModel: CalendarViewModel = viewModel()
+            PadelDatesLazy(
+                modifier = Modifier, viewModel = viewModel
+            )
+            Text(
+                "Choose a hour",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 40.dp)
+            )
+            AnimatedVisibility(
+                visible = viewModel.pressedState,
+                enter = animationForVisibility,
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                HourSelectionGrid(
+                    Modifier
+                        .padding(start = 210.dp, end = 10.dp, top = 210.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
+                    viewModel = viewModel
+                )
+            }
+            AnimatedVisibility(
+                visible = viewModel.buttonPressedState,
+                enter = animationForVisibility,
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                Box(modifier = Modifier.padding(top = 50.dp)) {
+                    AvailabilityButton()
+                }
+
+            }
+
+        }
+    })
+}
+
+
+@PreviewScreenSizes
 @Preview
 @Composable
-fun SideNav() {
-    var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    var scope = rememberCoroutineScope()
-    SideNav(drawerState = drawerState, scope = scope)
+fun sidenav() {
+    AdaptiveNavigationScreen()
+
 }
+
+
 
 
