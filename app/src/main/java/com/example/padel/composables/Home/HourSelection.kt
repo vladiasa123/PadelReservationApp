@@ -1,4 +1,4 @@
-package com.example.padel.composables
+package com.example.padel.composables.Home
 
 import android.view.MotionEvent
 import androidx.compose.animation.animateColorAsState

@@ -1,4 +1,4 @@
-package com.example.padel.composables
+package com.example.padel.composables.Home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

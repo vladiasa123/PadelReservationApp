@@ -1,4 +1,4 @@
-package com.example.padel.composables
+package com.example.padel.composables.Login
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -120,7 +120,7 @@ fun LoginPage(navController: NavHostController) {
                         TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock)
                         Text("Forgot password?", modifier = Modifier.padding(start = 160.dp))
                         Button(
-                            onClick = { navController.navigate("screenB") },
+                            onClick = { navController.navigate("ScreenB") },
                             modifier = Modifier
                                 .padding(top = 100.dp)
                                 .width(270.dp)

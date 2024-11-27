@@ -6,14 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.padel.MainApp.AdaptiveNavigationScreen
-import com.example.padel.composables.LoginPage
+import com.example.padel.ViewModels.ProfileViewModel
+import com.example.padel.composables.Login.LoginPage
+import com.example.padel.composables.Profile.ProfilePage
 
 
 class MainActivity : ComponentActivity() {
@@ -58,19 +58,16 @@ class MainActivity : ComponentActivity() {
                     LoginPage(navController = navController)
                 }
                 composable("screenB") {
-                    AdaptiveNavigationScreen()
+                    AdaptiveNavigationScreen(navController = navController)
+                }
+                composable("screenC") {
+                    ProfilePage(viewModel = ProfileViewModel())
                 }
             }
         }
     }
 }
 
-@PreviewScreenSizes
-@Preview
-@Composable
-fun Adpt() {
-    AdaptiveNavigationScreen()
-}
 
 
 

@@ -1,9 +1,7 @@
-package com.example.padel.composables
+package com.example.padel.composables.Home
 
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
@@ -11,6 +9,7 @@ import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.padel.data.BottomBarIcons
 
@@ -33,6 +32,8 @@ fun SideNavigation() {
 fun ColumnScope.AddRailItem(
     screen: BottomBarIcons
 ) {
+    val configuration = LocalConfiguration.current
+    val landscape = configuration.orientation
     NavigationRailItem(
         modifier = Modifier.padding(15.dp),
         label = {
@@ -55,3 +56,4 @@ fun ColumnScope.AddRailItem(
         colors = NavigationRailItemDefaults.colors()
     )
 }
+

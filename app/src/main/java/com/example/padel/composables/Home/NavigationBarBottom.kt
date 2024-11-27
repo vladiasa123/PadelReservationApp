@@ -1,4 +1,4 @@
-package com.example.padel.composables
+package com.example.padel.composables.Home
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
@@ -7,18 +7,19 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import com.example.padel.data.BottomBarIcons
 
 @Composable
-fun BottomNavigation() {
+fun BottomNavigation(navController: NavController) {
     val items = listOf(
         BottomBarIcons.Home, BottomBarIcons.List, BottomBarIcons.Profile
     )
-
     NavigationBar {
         items.forEach { item ->
             AddItem(
-                screen = item
+                screen = item,
+                navController = navController,
             )
         }
     }
@@ -27,15 +28,14 @@ fun BottomNavigation() {
 
 @Composable
 fun RowScope.AddItem(
-    screen: BottomBarIcons
+    screen: BottomBarIcons,
+    navController: NavController
 ) {
 
     NavigationBarItem(
         label = {
             Text(text = screen.title)
         },
-
-        // The icon resource
         icon = {
             Icon(
                 imageVector = (screen.icon), contentDescription = screen.title
@@ -46,7 +46,7 @@ fun RowScope.AddItem(
 
         alwaysShowLabel = true,
 
-        onClick = { /*TODO*/ },
+        onClick = { navController.navigate(screen.route) },
 
         colors = NavigationBarItemDefaults.colors()
     )

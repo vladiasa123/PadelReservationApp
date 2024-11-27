@@ -25,30 +25,29 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.padel.ViewModels.CalendarViewModel
-import com.example.padel.composables.AvailabilityButton
-import com.example.padel.composables.BottomNavigation
-import com.example.padel.composables.HourSelectionGrid
-import com.example.padel.composables.PadelDatesLazy
-import com.example.padel.composables.SideNavigation
+import com.example.padel.composables.Home.AvailabilityButton
+import com.example.padel.composables.Home.BottomNavigation
+import com.example.padel.composables.Home.HourSelectionGrid
+import com.example.padel.composables.Home.PadelDatesLazy
+import com.example.padel.composables.Home.SideNavigation
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdaptiveNavigationScreen() {
+fun AdaptiveNavigationScreen(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
     Scaffold(topBar = {
-        if (screenWidthDp > 600) {
+        if(screenWidthDp > 600){
             SideNavigation()
         }
     }, bottomBar = {
         if (screenWidthDp < 600) {
-            BottomNavigation()
+            BottomNavigation(navController = navController)
         }
     }, content = { paddingValues ->
         Column(
@@ -132,13 +131,6 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
 }
 
 
-@PreviewScreenSizes
-@Preview
-@Composable
-fun sidenav() {
-    AdaptiveNavigationScreen()
-
-}
 
 
 
