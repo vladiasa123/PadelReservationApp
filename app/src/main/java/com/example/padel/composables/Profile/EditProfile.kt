@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +30,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfile(modifier: Modifier = Modifier) {
+fun EditProfile(modifier: Modifier = Modifier, onClick: () -> Unit) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     Box(
         modifier = Modifier
@@ -63,6 +65,10 @@ fun EditProfile(modifier: Modifier = Modifier) {
                 label = { Text(text = "Your Label") },
                 placeholder = { Text(text = "Your Placeholder/Hint") },
             )
+            Button(onClick = { onClick }, modifier = Modifier.width(250.dp).padding(top = 10.dp).align(
+                Alignment.CenterHorizontally))  {
+                Text(text = "Edit Profile")
+            }
         }
     }
 }

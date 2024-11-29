@@ -1,6 +1,8 @@
 package com.example.padel.composables.Profile
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -48,7 +50,7 @@ fun ProfilePage(viewModel: ProfileViewModel) {
                 .fillMaxWidth()
                 .fillMaxSize()
                 .align(Alignment.BottomCenter)
-                .then(if (animateState) Modifier.blur(20.dp) else Modifier)
+                .then(if (animateState.value) Modifier.blur(20.dp) else Modifier)
 
         ) {
             Box(
@@ -61,7 +63,7 @@ fun ProfilePage(viewModel: ProfileViewModel) {
 
             ) {
                 Column(modifier = Modifier.align(Alignment.Center)) {
-                    if (animateState == false) {
+                    if (animateState.value == false) {
                         UserInfo(text = "Vlad Corpodean")
                         UserInfo(text = "VladCorpodaen")
                         UserInfo(text = "VladCorpodaen")
@@ -72,7 +74,7 @@ fun ProfilePage(viewModel: ProfileViewModel) {
                             .padding(top = 50.dp)
                     ) {
                         Button(
-                            onClick = { viewModel.animatedState = true },
+                            onClick = { viewModel.animatedState.value = true },
                             modifier = Modifier.width(200.dp)
                         ) {
                             Text("Edit profile")
@@ -83,7 +85,7 @@ fun ProfilePage(viewModel: ProfileViewModel) {
             }
         }
         val offsetY by animateDpAsState(
-            targetValue = if (!animateState) (-110).dp else (-300).dp,
+            targetValue = if (!animateState.value) (-110).dp else (-300).dp,
             animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
             label = ""
         )
@@ -107,6 +109,9 @@ fun ProfilePage(viewModel: ProfileViewModel) {
                 )
 
             }
+        }
+        if (animateState.value == true) {
+            EditProfile(modifier = Modifier, onClick = {viewModel.animatedState.value = false})
         }
     }
 }

@@ -60,8 +60,11 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     var initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val configuration = LocalConfiguration.current
-
     val screenWidthDp = configuration.screenWidthDp
+    var color by remember { mutableStateOf(initialColor) }
+    val animateColors by animateColorAsState(targetValue = color)
+    var selected by remember { mutableStateOf(false) }
+    val scale = animateFloatAsState(if (selected) 0.5f else 1f)
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 100.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -73,10 +76,6 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
         }
     ) {
         items(hourItems) { hourItems ->
-            var color by remember { mutableStateOf(initialColor) }
-            val animateColors by animateColorAsState(targetValue = color)
-            var selected by remember { mutableStateOf(false) }
-            val scale = animateFloatAsState(if (selected) 0.5f else 1f)
             HourSelection(hour = hourItems.hour,
                 colorChanging = animateColors,
                 modifier = Modifier

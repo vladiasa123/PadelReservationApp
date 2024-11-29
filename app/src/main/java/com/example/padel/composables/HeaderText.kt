@@ -22,7 +22,7 @@ import com.example.padel.ViewModels.ProfileViewModel
 @Composable
 fun HeaderText(viewModel: ProfileViewModel) {
     val offsetX by animateDpAsState(
-        targetValue = if (!viewModel.animatedState) (0).dp else (-300).dp,
+        targetValue = if (!viewModel.animatedState.value) (0).dp else (-300).dp,
         animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
         label = ""
     )
