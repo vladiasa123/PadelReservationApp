@@ -14,6 +14,7 @@ import com.example.padel.MainApp.AdaptiveNavigationScreen
 import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.composables.Login.LoginPage
 import com.example.padel.composables.Profile.ProfilePage
+import com.example.padel.register.RegisterPage
 
 
 class MainActivity : ComponentActivity() {
@@ -62,6 +63,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable("screenC") {
                     ProfilePage(viewModel = ProfileViewModel())
+                }
+                composable("screenD") {
+                    RegisterPage(navController = navController)
                 }
             }
         }

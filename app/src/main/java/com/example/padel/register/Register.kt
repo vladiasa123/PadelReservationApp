@@ -1,5 +1,7 @@
-package com.example.padel.composables.Login
+package com.example.padel.register
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -37,26 +39,81 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.padel.api.RetrofitClient
+import com.example.padel.data.UserSignupRequest
+import kotlinx.coroutines.launch
+import retrofit2.Response
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+
 
 @Composable
-fun LoginPage(navController: NavHostController) {
+fun RegisterPage(navController: NavHostController) {
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+
+    fun handleSignup() {
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            showToast(context, "All fields are required")
+            return
+        }
+
+        isLoading = true
+        scope.launch {
+            val signupRequest = UserSignupRequest(id = 0 ,username, email, password)
+            val response: Response<UserSignupRequest> = RetrofitClient.apiService.signup(signupRequest)
+
+            isLoading = false
+
+            if (response.isSuccessful) {
+                showToast(context, "Signup successful")
+                navController.navigate("ScreenA")
+            } else {
+                showToast(context, "Signup failed: ${response.message()}")
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
 
         var visible by remember { mutableStateOf(false) }
         LaunchedEffect(Unit) {
             visible = true
         }
-        AnimatedVisibility(visible = visible,
+       /* AnimatedVisibility(visible = visible,
             enter = slideInHorizontally(animationSpec = tween(durationMillis = 1000)) { fullWidth ->
                 -fullWidth / 3
             } + fadeIn(
@@ -64,7 +121,7 @@ fun LoginPage(navController: NavHostController) {
             ),
             exit = slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessHigh)) {
                 200
-            } + fadeOut()) {
+            } + fadeOut()) { */
             Column {
                 Text(
                     "Welcome",
@@ -84,8 +141,8 @@ fun LoginPage(navController: NavHostController) {
                 )
             }
 
-        }
-        AnimatedVisibility(visible = visible, enter = slideInVertically(
+        /*}*/
+     /*  AnimatedVisibility(visible = visible, enter = slideInVertically(
             animationSpec = tween(durationMillis = 1000)
         ) { fullHeight ->
             fullHeight
@@ -95,7 +152,7 @@ fun LoginPage(navController: NavHostController) {
             animationSpec = spring(stiffness = Spring.StiffnessHigh)
         ) {
             200
-        } + fadeOut()) {
+        } + fadeOut()) {*/
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -116,12 +173,15 @@ fun LoginPage(navController: NavHostController) {
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
                         TextFieldWithIcons(
-                            modifier = Modifier, "Email or Username", Icons.Filled.Email
+                            modifier = Modifier, "Username", Icons.Filled.Email, value = username, onValueChange = {username = it}
                         )
-                        TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock)
-                        Text("Don't have an account?", modifier = Modifier.padding(start = 160.dp).clickable { navController.navigate("ScreenD") })
+                        TextFieldWithIcons(
+                            modifier = Modifier, "Email", Icons.Filled.Email, value =  email, onValueChange = {email = it}
+                        )
+                        TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock, value = password, onValueChange = {password = it})
+                        Text("Already have an account?", modifier = Modifier.padding(start = 160.dp).clickable { navController.navigate("ScreenA") })
                         Button(
-                            onClick = { navController.navigate("ScreenB") },
+                            onClick = { handleSignup() },
                             modifier = Modifier
                                 .padding(top = 100.dp)
                                 .width(270.dp)
@@ -133,13 +193,13 @@ fun LoginPage(navController: NavHostController) {
                     }
                 }
             }
-        }
+        /*}*/
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVector) {
+fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVector, value: String, onValueChange: (String) -> Unit) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var unfocusedColor = MaterialTheme.colorScheme.primary
     var focusedColor = MaterialTheme.colorScheme.tertiary
@@ -153,13 +213,18 @@ fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVecto
             focusedSupportingTextColor = focusedColor,
             focusedLabelColor = focusedColor
         ),
-        value = text,
+        value = value,
         leadingIcon = { Icon(imageVector = Icon, contentDescription = "emailIcon") },
         onValueChange = {
-            text = it
+            onValueChange(it)
         },
         label = { Text(text = placeHolder) },
         placeholder = { Text(text = "Enter your e-mail") },
     )
 }
 
+@Preview
+@Composable
+fun RegisterPreview() {
+ RegisterPage(navController = rememberNavController())
+}
