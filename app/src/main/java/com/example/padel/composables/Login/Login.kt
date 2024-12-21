@@ -37,21 +37,65 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.padel.ViewModels.RegisterLoginViewModel
+import com.example.padel.api.RetrofitClient
+import com.example.padel.data.LoginResponse
+import com.example.padel.data.UserLoginRequest
+import com.example.padel.register.showToast
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 
 @Composable
-fun LoginPage(navController: NavHostController) {
-    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+fun LoginPage(navController: NavHostController, registerLoginViewModel: RegisterLoginViewModel) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
+
+
+
+    fun handleLogin() {
+        if (registerLoginViewModel.email.value.isEmpty() || registerLoginViewModel.password.value.isEmpty()) {
+            showToast(context, "All fields are required")
+            return
+        }
+
+        registerLoginViewModel.isLoading.value = true
+        scope.launch {
+            val loginRequest = UserLoginRequest(
+                registerLoginViewModel.email.value, registerLoginViewModel.password.value
+            )
+            val response: Response<LoginResponse> = RetrofitClient.apiService.login(loginRequest)
+
+            registerLoginViewModel.isLoading.value = false
+
+            if (response.isSuccessful) {
+                showToast(context, "Login successful")
+                navController.navigate("ScreenB")
+            } else {
+                showToast(context, "Signup failed: ${response.message()}")
+            }
+        }
+    }
+
+
+
+
+
+    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
         var visible by remember { mutableStateOf(false) }
         LaunchedEffect(Unit) {
             visible = true
@@ -115,13 +159,22 @@ fun LoginPage(navController: NavHostController) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        TextFieldWithIcons(
-                            modifier = Modifier, "Email or Username", Icons.Filled.Email
-                        )
-                        TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock)
-                        Text("Don't have an account?", modifier = Modifier.padding(start = 160.dp).clickable { navController.navigate("ScreenD") })
+                        TextFieldWithIcons(modifier = Modifier,
+                            "Email or Username",
+                            Icons.Filled.Email,
+                            value = registerLoginViewModel.email.value,
+                            onValueChange = { registerLoginViewModel.email.value = it })
+                        TextFieldWithIcons(modifier = Modifier,
+                            "Password",
+                            Icons.Filled.Lock,
+                            value = registerLoginViewModel.password.value,
+                            onValueChange = { registerLoginViewModel.password.value = it })
+                        Text("Don't have an account?",
+                            modifier = Modifier
+                                .padding(start = 160.dp)
+                                .clickable { navController.navigate("ScreenD") })
                         Button(
-                            onClick = { navController.navigate("ScreenB") },
+                            onClick = { handleLogin() },
                             modifier = Modifier
                                 .padding(top = 100.dp)
                                 .width(270.dp)
@@ -139,7 +192,13 @@ fun LoginPage(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVector) {
+fun TextFieldWithIcons(
+    modifier: Modifier,
+    placeHolder: String,
+    Icon: ImageVector,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var unfocusedColor = MaterialTheme.colorScheme.primary
     var focusedColor = MaterialTheme.colorScheme.tertiary
@@ -153,10 +212,10 @@ fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVecto
             focusedSupportingTextColor = focusedColor,
             focusedLabelColor = focusedColor
         ),
-        value = text,
+        value = value,
         leadingIcon = { Icon(imageVector = Icon, contentDescription = "emailIcon") },
         onValueChange = {
-            text = it
+            onValueChange(it)
         },
         label = { Text(text = placeHolder) },
         placeholder = { Text(text = "Enter your e-mail") },

@@ -2,16 +2,6 @@ package com.example.padel.register
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.padel.ViewModels.RegisterLoginViewModel
 import com.example.padel.api.RetrofitClient
 import com.example.padel.data.UserSignupRequest
 import kotlinx.coroutines.launch
@@ -63,33 +54,33 @@ fun showToast(context: Context, message: String) {
 }
 
 
-
 @Composable
-fun RegisterPage(navController: NavHostController) {
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+fun RegisterPage(navController: NavHostController, registerLoginViewModel: RegisterLoginViewModel) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
 
     fun handleSignup() {
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (registerLoginViewModel.username.value.isEmpty() || registerLoginViewModel.email.value.isEmpty() || registerLoginViewModel.password.value.isEmpty()) {
             showToast(context, "All fields are required")
             return
         }
 
-        isLoading = true
+        registerLoginViewModel.isLoading.value = true
         scope.launch {
-            val signupRequest = UserSignupRequest(id = 0 ,username, email, password)
-            val response: Response<UserSignupRequest> = RetrofitClient.apiService.signup(signupRequest)
+            val signupRequest = UserSignupRequest(
+                id = 0,
+                registerLoginViewModel.username.value,
+                registerLoginViewModel.email.value,
+                registerLoginViewModel.password.value
+            )
+            val response: Response<UserSignupRequest> =
+                RetrofitClient.apiService.signup(signupRequest)
 
-            isLoading = false
+            registerLoginViewModel.isLoading.value = false
 
             if (response.isSuccessful) {
                 showToast(context, "Signup successful")
-                navController.navigate("ScreenA")
             } else {
                 showToast(context, "Signup failed: ${response.message()}")
             }
@@ -113,93 +104,116 @@ fun RegisterPage(navController: NavHostController) {
         LaunchedEffect(Unit) {
             visible = true
         }
-       /* AnimatedVisibility(visible = visible,
-            enter = slideInHorizontally(animationSpec = tween(durationMillis = 1000)) { fullWidth ->
-                -fullWidth / 3
-            } + fadeIn(
-                animationSpec = tween(durationMillis = 200)
-            ),
-            exit = slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessHigh)) {
-                200
-            } + fadeOut()) { */
-            Column {
-                Text(
-                    "Welcome",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.background
-                )
-                Text(
-                    "Back",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.padding(start = 10.dp, top = 10.dp),
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.background
-                )
-            }
+        /* AnimatedVisibility(visible = visible,
+             enter = slideInHorizontally(animationSpec = tween(durationMillis = 1000)) { fullWidth ->
+                 -fullWidth / 3
+             } + fadeIn(
+                 animationSpec = tween(durationMillis = 200)
+             ),
+             exit = slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessHigh)) {
+                 200
+             } + fadeOut()) { */
+        Column {
+            Text(
+                "Welcome",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                fontSize = 50.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.background
+            )
+            Text(
+                "Back",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(start = 10.dp, top = 10.dp),
+                fontSize = 50.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.background
+            )
+        }
 
         /*}*/
-     /*  AnimatedVisibility(visible = visible, enter = slideInVertically(
-            animationSpec = tween(durationMillis = 1000)
-        ) { fullHeight ->
-            fullHeight
-        } + fadeIn(
-            animationSpec = tween(durationMillis = 200)
-        ), exit = slideOutVertically(
-            animationSpec = spring(stiffness = Spring.StiffnessHigh)
+        /*  AnimatedVisibility(visible = visible, enter = slideInVertically(
+               animationSpec = tween(durationMillis = 1000)
+           ) { fullHeight ->
+               fullHeight
+           } + fadeIn(
+               animationSpec = tween(durationMillis = 200)
+           ), exit = slideOutVertically(
+               animationSpec = spring(stiffness = Spring.StiffnessHigh)
+           ) {
+               200
+           } + fadeOut()) {*/
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.BottomCenter)
         ) {
-            200
-        } + fadeOut()) {*/
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.BottomCenter)
+                    .height(550.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .height(550.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
-                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .padding(top = 50.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    Column(
+                    TextFieldWithIcons(
+                        modifier = Modifier,
+                        "Username",
+                        Icons.Filled.Email,
+                        value = registerLoginViewModel.username.value,
+                        onValueChange = { registerLoginViewModel.username.value = it }
+                    )
+                    TextFieldWithIcons(
+                        modifier = Modifier,
+                        "Email",
+                        Icons.Filled.Email,
+                        value = registerLoginViewModel.email.value,
+                        onValueChange = { registerLoginViewModel.email.value = it }
+                    )
+                    TextFieldWithIcons(
+                        modifier = Modifier,
+                        "Password",
+                        Icons.Filled.Lock,
+                        value = registerLoginViewModel.password.value,
+                        onValueChange = { registerLoginViewModel.password.value = it })
+                    Text(
+                        "Already have an account?",
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 50.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                            .padding(start = 160.dp)
+                            .clickable { navController.navigate("ScreenA") })
+                    Button(
+                        onClick = { handleSignup() },
+                        modifier = Modifier
+                            .padding(top = 100.dp)
+                            .width(270.dp)
+                            .height(40.dp),
+                        shape = RoundedCornerShape(5.dp)
                     ) {
-                        TextFieldWithIcons(
-                            modifier = Modifier, "Username", Icons.Filled.Email, value = username, onValueChange = {username = it}
-                        )
-                        TextFieldWithIcons(
-                            modifier = Modifier, "Email", Icons.Filled.Email, value =  email, onValueChange = {email = it}
-                        )
-                        TextFieldWithIcons(modifier = Modifier, "Password", Icons.Filled.Lock, value = password, onValueChange = {password = it})
-                        Text("Already have an account?", modifier = Modifier.padding(start = 160.dp).clickable { navController.navigate("ScreenA") })
-                        Button(
-                            onClick = { handleSignup() },
-                            modifier = Modifier
-                                .padding(top = 100.dp)
-                                .width(270.dp)
-                                .height(40.dp),
-                            shape = RoundedCornerShape(5.dp)
-                        ) {
-                            Text("Sign up")
-                        }
+                        Text("Sign up")
                     }
                 }
             }
+        }
         /*}*/
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVector, value: String, onValueChange: (String) -> Unit) {
+fun TextFieldWithIcons(
+    modifier: Modifier,
+    placeHolder: String,
+    Icon: ImageVector,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var unfocusedColor = MaterialTheme.colorScheme.primary
     var focusedColor = MaterialTheme.colorScheme.tertiary
@@ -226,5 +240,8 @@ fun TextFieldWithIcons(modifier: Modifier, placeHolder: String, Icon: ImageVecto
 @Preview
 @Composable
 fun RegisterPreview() {
- RegisterPage(navController = rememberNavController())
+    RegisterPage(
+        navController = rememberNavController(),
+        registerLoginViewModel = RegisterLoginViewModel()
+    )
 }

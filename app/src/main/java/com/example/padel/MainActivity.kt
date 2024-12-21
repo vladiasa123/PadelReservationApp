@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.padel.MainApp.AdaptiveNavigationScreen
 import com.example.padel.ViewModels.ProfileViewModel
+import com.example.padel.ViewModels.RegisterLoginViewModel
 import com.example.padel.composables.Login.LoginPage
 import com.example.padel.composables.Profile.ProfilePage
 import com.example.padel.register.RegisterPage
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 }
             ) {
                 composable("screenA") {
-                    LoginPage(navController = navController)
+                    LoginPage(navController = navController, registerLoginViewModel = RegisterLoginViewModel())
                 }
                 composable("screenB") {
                     AdaptiveNavigationScreen(navController = navController)
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     ProfilePage(viewModel = ProfileViewModel())
                 }
                 composable("screenD") {
-                    RegisterPage(navController = navController)
+                    RegisterPage(navController = navController, registerLoginViewModel = RegisterLoginViewModel())
                 }
             }
         }
