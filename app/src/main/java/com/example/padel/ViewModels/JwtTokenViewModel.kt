@@ -12,10 +12,6 @@ import com.example.padel.data.PageAccesResponse
 import com.example.padel.register.showToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.security.Keys
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import retrofit2.Response

@@ -3,6 +3,8 @@ package com.example.padel.composables.Home
 import android.view.MotionEvent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -22,9 +24,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.padel.data.calendarItems
 import com.example.padel.ViewModels.CalendarViewModel
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
+import com.example.padel.data.calendarItems
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -32,9 +38,9 @@ import com.example.padel.ViewModels.CalendarViewModel
 fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) {
     val initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
-    var selected by remember { mutableStateOf(false) }
+    var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(start = 10.dp, end = 10.dp)
             .border(
                 2.dp,
@@ -44,48 +50,68 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
     ) {
         LazyRow {
             items(calendarItems) { item ->
-                var color by remember { mutableStateOf(initialColor) }
-                var selected by remember { mutableStateOf(false) }
-                val scale = animateFloatAsState(if (selected) 0.5f else 1f)
+                val isSelected = selectedItemIndex == item.id
+
+                val backgroundColor by animateColorAsState(
+                    targetValue = when {
+                        isSelected -> secondaryColor
+                        else -> initialColor
+                    },
+                    animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                )
+
+                val scale by animateFloatAsState(
+                    targetValue = if (isSelected) 0.9f else 1f,
+                    animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                )
+
                 val state = rememberLazyListState()
                 val stateScrolling = state.isScrollInProgress
-                val animateColors by animateColorAsState(targetValue = color)
-                CalendarItem(month = item.month,
+
+                CalendarItem(
+                    month = item.month,
                     day = item.dayNumber,
                     dayText = item.day,
-                    colorChanging = animateColors,
+                    colorChanging = backgroundColor,
                     modifier = Modifier
-                        .scale(scale.value)
+                        .scale(scale)
                         .padding(5.dp)
                         .clip(RoundedCornerShape(5.dp))
+                        .background(backgroundColor)
                         .pointerInteropFilter {
-                            if (!stateScrolling) { // Ignore pointer events while scrolling
+                            if (!stateScrolling) {
                                 when (it.action) {
                                     MotionEvent.ACTION_DOWN -> {
-                                        selected = true
-                                        color = if (color == initialColor) secondaryColor else initialColor
-                                        if (color == secondaryColor) {
+                                        if (isSelected) {
+                                            selectedItemIndex = null
+                                            viewModel.pressedState = false
+                                        } else {
+                                            selectedItemIndex = item.id
                                             viewModel.pressedState = true
                                         }
-
                                     }
+
                                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                                        selected = false
-                                        if (color == initialColor) {
+                                        if (!isSelected && backgroundColor == initialColor) {
                                             viewModel.pressedState = false
                                         }
-
                                     }
                                 }
-
                             }
                             true
                         }
-
                 )
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun PreviewCalendar() {
+    val viewModel = CalendarViewModel()
+    PadelDatesLazy(viewModel = viewModel)
 }
 
 

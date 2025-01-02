@@ -1,19 +1,32 @@
 package com.example.padel.data
 
-// Data class with the month field as a String to represent month names.
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
+
+
 data class Calendar(
-    val month: String,  // Month as String (e.g., "FEB", "JAN")
-    val dayNumber: String,  // Day number as String (e.g., "1", "2")
-    val day: String  // Day of the week (e.g., "Mon", "Tue")
+    val month: String, val dayNumber: String, val day: String, val id: Int
 )
 
-// Initialize the list with month names like "JAN", "FEB", etc.
-val calendarItems = listOf(
-    Calendar("JAN", "1", "Mon"),
-    Calendar("FEB", "2", "Tue"),
-    Calendar("MAR", "3", "Wed"),
-    Calendar("APR", "4", "Thu"),
-    Calendar("MAY", "5", "Fri"),
-    Calendar("JUN", "6", "Sat"),
-    Calendar("JUL", "7", "Sun")
+fun generateDaysForMonth(month: Int, year: Int, currentDate: LocalDate): List<Calendar> {
+    val monthName =
+        LocalDate.of(year, month, 1).month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            .uppercase()
+    val totalDays =
+        LocalDate.of(year, month, 1).month.length(LocalDate.of(year, month, 1).isLeapYear)
+
+    return (1..totalDays).map { day ->
+            val date = LocalDate.of(year, month, day)
+            if (!date.isBefore(currentDate)) {
+                val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                Calendar(month = monthName, dayNumber = day.toString(), day = dayName, id = day)
+            } else {
+                null
+            }
+        }.filterNotNull()
+}
+
+val calendarItems = generateDaysForMonth(
+    month = LocalDate.now().monthValue, year = LocalDate.now().year, currentDate = LocalDate.now()
 )
