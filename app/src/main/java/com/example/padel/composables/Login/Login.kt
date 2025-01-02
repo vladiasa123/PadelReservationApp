@@ -1,5 +1,7 @@
 package com.example.padel.composables.Login
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -64,7 +66,18 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    fun saveTokenToPreferences(token: String) {
+        val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("auth_token", token)
+            apply()
+        }
+    }
 
+    fun getTokenFromPreferences(context: Context): String? {
+        val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("auth_token", null)  // The second parameter is the default value if the key is not found
+    }
 
 
     fun handleLogin() {
@@ -83,13 +96,27 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
             registerLoginViewModel.isLoading.value = false
 
             if (response.isSuccessful) {
-                showToast(context, "Login successful")
-                navController.navigate("ScreenB")
+                val loginResponse = response.body()
+
+                loginResponse?.let {
+                    val extractedToken = it.token
+                    saveTokenToPreferences(extractedToken)
+                   val savedToken =  getTokenFromPreferences(context)
+                    Log.d("Saved Token", "Saved token: $savedToken")
+                    showToast(context, "Login successful, token saved")
+                    navController.navigate("ScreenB")
+                } ?: run {
+                    showToast(context, "Login failed: Invalid response body")
+                }
             } else {
-                showToast(context, "Signup failed: ${response.message()}")
+                showToast(context, "Login failed: ${response.message()}")
             }
         }
     }
+
+    val savedToken = getTokenFromPreferences(context)
+    Log.d("Saved Token", "Saved token: $savedToken")
+
 
 
 
