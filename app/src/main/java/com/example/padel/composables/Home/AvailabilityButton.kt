@@ -1,5 +1,6 @@
 package com.example.padel.composables.Home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,13 +13,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.padel.ViewModels.CalendarViewModel
+import com.example.padel.api.RetrofitClient
+import com.example.padel.data.ReservationRequest
+import com.example.padel.data.ReservationResponse
+import kotlinx.coroutines.launch
+import retrofit2.Response
 
 @Composable
 fun AvailabilityButton(modifier: Modifier = Modifier) {
+    val scope = rememberCoroutineScope()
+    val viewModel: CalendarViewModel = viewModel()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -30,7 +41,19 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.headlineSmall
         )
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                scope.launch {
+                    val reservationRequest = ReservationRequest(
+                        viewModel.selectedDay ?: "null",
+                        viewModel.selectedHour ?: "null"
+                    )
+                    val response: Response<ReservationResponse> = RetrofitClient.apiService.sendReservation(reservationRequest)
+
+                    if(response.isSuccessful){
+                        Log.d("context", "resercation is succesfull")
+                    }
+                }
+            },
             modifier = Modifier
                 .align(CenterHorizontally)
                 .width(250.dp)
@@ -51,8 +74,11 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
     }
 }
 
+
 @Preview
 @Composable
 fun previewAvailabilityButton() {
-    AvailabilityButton()
+val modifier = Modifier
+    val viewModel = CalendarViewModel()
+    AvailabilityButton(modifier)
 }

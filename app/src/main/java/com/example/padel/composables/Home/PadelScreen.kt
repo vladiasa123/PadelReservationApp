@@ -88,6 +88,7 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                                         } else {
                                             selectedItemIndex = item.id
                                             viewModel.pressedState = true
+                                            viewModel.updateDate(item.id)
                                         }
                                     }
 
