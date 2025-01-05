@@ -68,8 +68,10 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
             onClick = {
                 scope.launch {
                     val reservationRequest = ReservationRequest(
+                        viewModel.selectedHour ?: "null",
                         viewModel.selectedDay ?: "null",
-                        viewModel.selectedHour ?: "null"
+                        (viewModel.selectedDayId ?: "null").toString()
+
                     )
                     val response: Response<ReservationResponse> = RetrofitClient.apiService.sendReservation(reservationRequest)
 

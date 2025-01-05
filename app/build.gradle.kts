@@ -80,6 +80,8 @@ dependencies {
     implementation("androidx.compose.material:material:1.4.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
     implementation("androidx.compose.ui:ui-graphics")
+    implementation("io.ktor:ktor-client-cio:2.3.0") 
+    implementation("io.ktor:ktor-client-websockets:2.3.0")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.5")

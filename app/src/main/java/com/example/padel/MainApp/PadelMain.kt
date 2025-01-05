@@ -14,16 +14,20 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -161,12 +165,22 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
                 enter = animationForVisibility,
                 exit = slideOutVertically() + shrinkVertically() + fadeOut()
             ) {
-                HourSelectionGrid(
-                    Modifier
-                        .padding(start = 210.dp, end = 10.dp, top = 210.dp)
-                        .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
-                    viewModel = viewModel
-                )
+                Column {
+                    Row {
+                        Button(onClick = {viewModel.selectedHours = false}, border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseOnSurface), shape = RoundedCornerShape(20)) {
+                            Text("1 hour")
+                        }
+                        Button(onClick = {viewModel.selectedHours = true}, border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseOnSurface), shape = RoundedCornerShape(20), modifier = Modifier.padding(start = 10.dp)) {
+                            Text("2 hours")
+                        }
+                    }
+                    HourSelectionGrid(
+                        Modifier
+                            .padding(start = 210.dp, end = 10.dp, top = 210.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
+                        viewModel = viewModel
+                    )
+                }
             }
             AnimatedVisibility(
                 visible = viewModel.buttonPressedState,
@@ -192,21 +206,28 @@ fun ImageQr(modifier: Modifier = Modifier) {
     )
     val imageLocation = "/data/data/com.example.padel/files/reservation.png"
     Log.d("ImageQr", "Image Path: $imageLocation")
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            IconToggleButton(
-                modifier = Modifier.align(Alignment.TopEnd),
-                checked = isFullScreen,
-                onCheckedChange = {
-                    isFullScreen = false
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface)
+            .padding(start = 10.dp, end = 10.dp, bottom = 30.dp)
+            .fillMaxWidth()
+    ) {
+        androidx.compose.animation.AnimatedVisibility(visible = isFullScreen) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                IconToggleButton(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    checked = isFullScreen,
+                    onCheckedChange = {
+                        isFullScreen = false
+                    }
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    Icons.Filled.Close,
-                    contentDescription = null
-                )
             }
-
         }
 
         Image(

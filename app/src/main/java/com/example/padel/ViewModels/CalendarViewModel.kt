@@ -8,11 +8,14 @@ import androidx.lifecycle.ViewModel
 import com.example.padel.data.Calendar
 import com.example.padel.data.calendarItems
 import com.example.padel.data.hourItems
+import com.example.padel.data.twoHourItems
 
 class CalendarViewModel : ViewModel() {
 
     var selectedDay by mutableStateOf<String?>(null)
     var selectedHour by mutableStateOf<String?>(null)
+    var selectedDayId by mutableStateOf<Int?>(null)
+    var selectedHours by mutableStateOf(false)
 
     fun updateDate(id: Int) {
         val item = calendarItems.find { it.id == id }
@@ -21,9 +24,19 @@ class CalendarViewModel : ViewModel() {
     }
 
     fun updateHour(id: Int){
-        val item = hourItems.find { it.id == id }
-        selectedHour = item?.hour
-        Log.d("CalendarViewModel", "Selected hour: $selectedHour")
+        if(!selectedHours){
+            val item = hourItems.find { it.id == id }
+            selectedHour = item?.hour
+        }else{
+            val item = twoHourItems.find { it.id == id }
+            selectedHour = item?.hour
+        }
+    }
+
+    fun updateDayId(id: Int){
+        val item = calendarItems.find { it.id == id }
+        selectedDayId = item?.id
+        Log.d("CalendarViewModel", "Selected id: $selectedDayId")
     }
 
 

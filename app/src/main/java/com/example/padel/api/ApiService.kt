@@ -29,4 +29,7 @@ interface ApiService {
     @POST("/req/Reservation")
     suspend fun sendReservation(@Body user: ReservationRequest): Response<ReservationResponse>
 
+    @GET("/req/availability")
+    suspend fun checkAvailability(@Body user: ReservationRequest): Response<ReservationResponse>
+
 }

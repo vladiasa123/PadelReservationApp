@@ -1,9 +1,13 @@
 package com.example.padel.composables.Home
 
+import android.util.Log
 import android.view.MotionEvent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.data.hourItems
+import com.example.padel.data.twoHourItems
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -43,7 +49,7 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Co
     Box(
         modifier = Modifier
             .width(5.dp)
-            .height(25.dp)
+            .height(45.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colorChanging), contentAlignment = Alignment.Center
 
@@ -73,7 +79,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
             Modifier.padding(15.dp)
         }
     ) {
-        items(hourItems) { hourItems ->
+        items(if (viewModel.selectedHours) twoHourItems else hourItems) { hourItems ->
             var initialColor = MaterialTheme.colorScheme.onTertiary
             val secondaryColor = MaterialTheme.colorScheme.secondary
             val isSelected = selectedItemIndex == hourItems.id
@@ -105,6 +111,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                                         viewModel.pressedState = true
                                         viewModel.buttonPressedState = true
                                         viewModel.updateHour(hourItems.id)
+                                        Log.d("hour", viewModel.updateHour(hourItems.id).toString())
                                     }
                                 }
 
@@ -118,8 +125,8 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                         true
                     })
         }
-    }
-}
+    }}
+
 
 @Preview
 @Composable
