@@ -54,6 +54,7 @@ dependencies {
 
     implementation("androidx.compose.material3:material3:1.0.0-alpha12")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    implementation ("io.coil-kt:coil-compose:2.2.2")
     implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
     implementation("androidx.compose.material3:material3-window-size-class:1.0.0-alpha12")
@@ -79,6 +80,8 @@ dependencies {
     implementation("androidx.compose.material:material:1.4.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
     implementation("androidx.compose.ui:ui-graphics")
+    implementation("io.ktor:ktor-client-cio:2.3.0") 
+    implementation("io.ktor:ktor-client-websockets:2.3.0")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.5")

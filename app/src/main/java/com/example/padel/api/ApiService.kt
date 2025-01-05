@@ -1,8 +1,11 @@
 package com.example.padel.api
 
+
 import com.example.padel.data.LoginResponse
 import com.example.padel.data.PageAcces
 import com.example.padel.data.PageAccesResponse
+import com.example.padel.data.ReservationRequest
+import com.example.padel.data.ReservationResponse
 import com.example.padel.data.UserLoginRequest
 import com.example.padel.data.UserSignupRequest
 import retrofit2.Response
@@ -22,5 +25,11 @@ interface ApiService {
 
     @POST("/req/accesPage")
     suspend fun acces(@Body user: PageAcces): Response<PageAccesResponse>
+
+    @POST("/req/Reservation")
+    suspend fun sendReservation(@Body user: ReservationRequest): Response<ReservationResponse>
+
+    @GET("/req/availability")
+    suspend fun checkAvailability(@Body user: ReservationRequest): Response<ReservationResponse>
 
 }

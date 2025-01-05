@@ -1,8 +1,13 @@
 package com.example.padel.composables.Home
 
+import android.util.Log
 import android.view.MotionEvent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,9 +36,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.data.hourItems
+import com.example.padel.data.twoHourItems
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -40,7 +49,7 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Co
     Box(
         modifier = Modifier
             .width(5.dp)
-            .height(25.dp)
+            .height(45.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colorChanging), contentAlignment = Alignment.Center
 
@@ -57,14 +66,9 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Co
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
-    var initialColor = MaterialTheme.colorScheme.onTertiary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
-    var color by remember { mutableStateOf(initialColor) }
-    val animateColors by animateColorAsState(targetValue = color)
-    var selected by remember { mutableStateOf(false) }
-    val scale = animateFloatAsState(if (selected) 0.5f else 1f)
+    var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 100.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -75,35 +79,61 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
             Modifier.padding(15.dp)
         }
     ) {
-        items(hourItems) { hourItems ->
+        items(if (viewModel.selectedHours) twoHourItems else hourItems) { hourItems ->
+            var initialColor = MaterialTheme.colorScheme.onTertiary
+            val secondaryColor = MaterialTheme.colorScheme.secondary
+            val isSelected = selectedItemIndex == hourItems.id
+            val backgroundColor by animateColorAsState(
+                targetValue = when {
+                    isSelected -> secondaryColor
+                    else -> initialColor
+                },
+                animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+            )
+            var selected by remember { mutableStateOf(false) }
+            val scale = animateFloatAsState(if (selected) 0.5f else 1f)
+            var color by remember { mutableStateOf(initialColor) }
+            val animateColors by animateColorAsState(targetValue = color)
+            val state = rememberLazyListState()
+            val stateScrolling = state.isScrollInProgress
             HourSelection(hour = hourItems.hour,
-                colorChanging = animateColors,
+                colorChanging = backgroundColor,
                 modifier = Modifier
                     .scale(scale.value)
                     .pointerInteropFilter {
-                        when (it.action) {
-                            MotionEvent.ACTION_DOWN -> {
-                                selected = true
-                                color = if (color == initialColor) secondaryColor else initialColor
-                                if (color == secondaryColor) {
-                                    viewModel.buttonPressedState = true
+                        if (!stateScrolling) {
+                            when (it.action) {
+                                MotionEvent.ACTION_DOWN -> {
+                                    if (isSelected) {
+                                        selectedItemIndex = null
+                                    } else {
+                                        selectedItemIndex = hourItems.id
+                                        viewModel.pressedState = true
+                                        viewModel.buttonPressedState = true
+                                        viewModel.updateHour(hourItems.id)
+                                        Log.d("hour", viewModel.updateHour(hourItems.id).toString())
+                                    }
                                 }
 
-                            }
-
-                            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                                selected = false
-                                if (color == initialColor) {
-                                    viewModel.buttonPressedState = false
+                                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                                    if (!isSelected && backgroundColor == initialColor) {
+                                        viewModel.pressedState = false
+                                    }
                                 }
                             }
                         }
-
-
                         true
                     })
         }
-    }
+    }}
+
+
+@Preview
+@Composable
+private fun HourSelectionPreview() {
+    val viewModel = CalendarViewModel()
+    val modifier = Modifier
+    HourSelectionGrid(modifier, viewModel)
 }
 
 
