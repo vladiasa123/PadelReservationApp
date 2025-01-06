@@ -24,10 +24,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -59,7 +62,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.example.padel.R
 import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.ViewModels.QRViewModel
@@ -68,6 +70,7 @@ import com.example.padel.composables.Home.BottomNavigation
 import com.example.padel.composables.Home.HourSelectionGrid
 import com.example.padel.composables.Home.PadelDatesLazy
 import com.example.padel.composables.Home.SideNavigation
+import com.example.padel.data.hourItems
 import java.io.File
 
 
@@ -100,102 +103,106 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
     val viewModel: CalendarViewModel = viewModel()
     val qrViewModel: QRViewModel = viewModel()
     val density = LocalDensity.current
-    var animationForVisibility =
-        slideInVertically(initialOffsetY = { with(density) { -40.dp.roundToPx() } }) + expandVertically(
-            expandFrom = Alignment.Top
-        ) + fadeIn(
 
-            initialAlpha = 0.3f
-        )
-    var animationForVisibilityQR =
-        slideInVertically(initialOffsetY = { with(density) { -40.dp.roundToPx() } }) + expandVertically(
-            expandFrom = Alignment.Top
-        ) + fadeIn(
+    val animationForVisibility = slideInVertically(
+        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
+    ) + expandVertically(expandFrom = Alignment.Top) + fadeIn(initialAlpha = 0.3f)
 
-            initialAlpha = 0.3f
-        )
+    val animationForVisibilityQR = slideInVertically(
+        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
+    ) + expandVertically(expandFrom = Alignment.Top) + fadeIn(initialAlpha = 0.3f)
+
     AnimatedVisibility(
         visible = qrViewModel.QrCodeShowing.collectAsState().value == 1,
         enter = animationForVisibilityQR,
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
-        Box() {
-            val qrViewModel: QRViewModel = viewModel()
-            val qrCodeShowing = qrViewModel.QrCodeShowing.collectAsState().value
-            Log.d("qr", "qr is $qrCodeShowing")
-            if (qrCodeShowing == 1) {
-                ImageQr()
-            }
+        Box {
+            ImageQr()
         }
     }
+
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
     val contentModifier = if (screenWidthDp < 600) {
         Modifier.padding(16.dp)
     } else {
-        Modifier
-            .padding()
-            .fillMaxSize()
+        Modifier.fillMaxSize()
     }
-    Scaffold(modifier = Modifier.fillMaxSize(), content = { paddingValues ->
-        Column(
-            modifier = contentModifier.then(
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize(),
-            ),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+
+
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+            .padding(paddingValues)
+            .heightIn(min = 0.dp, max = 800.dp)
+    ) {
+        Text(
+            "Choose a date",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
+        )
+        PadelDatesLazy(
+            modifier = Modifier, viewModel = viewModel
+        )
+        Text(
+            "Choose a hour",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
+        )
+        AnimatedVisibility(
+            visible = viewModel.pressedState > 0,
+            enter = animationForVisibility,
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
         ) {
-            Text(
-                "Choose a date",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 10.dp, bottom = 5.dp)
-            )
-            PadelDatesLazy(
-                modifier = Modifier, viewModel = viewModel
-            )
-            Text(
-                "Choose a hour",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 40.dp)
-            )
-            AnimatedVisibility(
-                visible = viewModel.pressedState,
-                enter = animationForVisibility,
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                Column {
-                    Row {
-                        Button(onClick = {viewModel.selectedHours = false}, border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseOnSurface), shape = RoundedCornerShape(20)) {
-                            Text("1 hour")
-                        }
-                        Button(onClick = {viewModel.selectedHours = true}, border = BorderStroke(2.dp, MaterialTheme.colorScheme.inverseOnSurface), shape = RoundedCornerShape(20), modifier = Modifier.padding(start = 10.dp)) {
-                            Text("2 hours")
-                        }
+            Column {
+                Row {
+                    Button(
+                        modifier = Modifier.padding(start = 10.dp),
+                        onClick = { viewModel.selectedHours = false },
+                        border = BorderStroke(
+                            2.dp,
+                            MaterialTheme.colorScheme.inverseOnSurface
+                        ),
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text("1 hour")
                     }
-                    HourSelectionGrid(
-                        Modifier
-                            .padding(start = 210.dp, end = 10.dp, top = 210.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
-                        viewModel = viewModel
-                    )
+                    Button(
+                        onClick = { viewModel.selectedHours = true },
+                        border = BorderStroke(
+                            2.dp,
+                            MaterialTheme.colorScheme.inverseOnSurface
+                        ),
+                        shape = RoundedCornerShape(20),
+                        modifier = Modifier.padding(start = 10.dp)
+                    ) {
+                        Text("2 hours")
+                    }
                 }
+                HourSelectionGrid(
+                    Modifier
+                        .padding(10.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
+                    viewModel = viewModel,
+                )
             }
-            AnimatedVisibility(
-                visible = viewModel.buttonPressedState,
-                enter = animationForVisibility,
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                Box(modifier = Modifier.padding(top = 50.dp)) {
-                    AvailabilityButton()
-                }
-
-            }
-
         }
-    })
+        AnimatedVisibility(
+            visible = viewModel.buttonPressedState,
+            enter = animationForVisibility,
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        ) {
+            Box(modifier = Modifier.padding(top = 50.dp)) {
+                AvailabilityButton()
+            }
+        }
+    }
 }
+
+
+
 
 @Composable
 fun ImageQr(modifier: Modifier = Modifier) {
@@ -248,7 +255,7 @@ fun ImageQr(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun ImageQrs() {
-    ImageQr()
+    SideNav()
 }
 
 

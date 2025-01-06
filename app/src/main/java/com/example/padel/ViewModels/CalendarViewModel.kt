@@ -5,17 +5,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.padel.data.Calendar
 import com.example.padel.data.calendarItems
 import com.example.padel.data.hourItems
 import com.example.padel.data.twoHourItems
 
 class CalendarViewModel : ViewModel() {
+    var unavailableSlots: MutableList<String> = mutableListOf()
+        private set
+
+
+    fun addUnavailableSlot(slot: List<String>) {
+        unavailableSlots.clear()
+        unavailableSlots.addAll(slot)
+
+    }
+
 
     var selectedDay by mutableStateOf<String?>(null)
     var selectedHour by mutableStateOf<String?>(null)
     var selectedDayId by mutableStateOf<Int?>(null)
     var selectedHours by mutableStateOf(false)
+    var reservationPaid by mutableStateOf(false)
+    var hoursId by mutableStateOf(0)
+    var dayId by mutableStateOf(0)
+    var recomposeCalendar by mutableStateOf(0)
+
 
     fun updateDate(id: Int) {
         val item = calendarItems.find { it.id == id }
@@ -23,17 +37,17 @@ class CalendarViewModel : ViewModel() {
         Log.d("CalendarViewModel", "Selected day: $selectedDay")
     }
 
-    fun updateHour(id: Int){
-        if(!selectedHours){
+    fun updateHour(id: Int) {
+        if (!selectedHours) {
             val item = hourItems.find { it.id == id }
-            selectedHour = item?.hour
-        }else{
+            selectedHour = item?.timeRange
+        } else {
             val item = twoHourItems.find { it.id == id }
-            selectedHour = item?.hour
+            selectedHour = item?.timeRange
         }
     }
 
-    fun updateDayId(id: Int){
+    fun updateDayId(id: Int) {
         val item = calendarItems.find { it.id == id }
         selectedDayId = item?.id
         Log.d("CalendarViewModel", "Selected id: $selectedDayId")
@@ -41,8 +55,8 @@ class CalendarViewModel : ViewModel() {
 
 
     var buttonPressedState by mutableStateOf(false)
-    var pressedState by mutableStateOf(false)
-    fun pressedState(state: Boolean) {
+    var pressedState by mutableStateOf(0)
+    fun pressedState(state: Int) {
         pressedState = state
     }
 }

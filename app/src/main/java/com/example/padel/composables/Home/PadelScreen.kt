@@ -1,5 +1,6 @@
 package com.example.padel.composables.Home
 
+import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -14,9 +15,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -27,10 +30,12 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.padel.ViewModels.CalendarViewModel
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
+import com.example.padel.api.RetrofitClient
+import com.example.padel.data.AvailabilityRequest
+import com.example.padel.data.AvailabilityResponse
 import com.example.padel.data.calendarItems
+import kotlinx.coroutines.launch
+import retrofit2.Response
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -39,6 +44,30 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
     val initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(viewModel.recomposeCalendar) {
+        scope.launch {
+            val accesibilityRequest = AvailabilityRequest(
+                dayId = viewModel.dayId
+            )
+            val response: Response<AvailabilityResponse> =
+                RetrofitClient.apiService.checkAvailability(accesibilityRequest)
+            if (response.isSuccessful) {
+                val unavaiableSlots = response.body()?.availableSlots
+                if (unavaiableSlots.isNullOrEmpty()) {
+                    viewModel.addUnavailableSlot(emptyList())
+                } else {
+                    response.body()?.availableSlots?.let { slots ->
+                        viewModel.addUnavailableSlot(slots)
+                    }
+                }
+                Log.d("slots", viewModel.unavailableSlots.toString())
+            }
+        }
+    }
+
     Box(
         modifier = modifier
             .padding(start = 10.dp, end = 10.dp)
@@ -56,8 +85,7 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     targetValue = when {
                         isSelected -> secondaryColor
                         else -> initialColor
-                    },
-                    animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
                 )
 
                 val scale by animateFloatAsState(
@@ -68,8 +96,7 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                 val state = rememberLazyListState()
                 val stateScrolling = state.isScrollInProgress
 
-                CalendarItem(
-                    month = item.month,
+                CalendarItem(month = item.month,
                     day = item.dayNumber,
                     dayText = item.day,
                     colorChanging = backgroundColor,
@@ -84,25 +111,30 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                                     MotionEvent.ACTION_DOWN -> {
                                         if (isSelected) {
                                             selectedItemIndex = null
-                                            viewModel.pressedState = false
+                                            viewModel.pressedState = 0
+                                            viewModel.recomposeCalendar++
                                         } else {
+                                            viewModel.recomposeCalendar++
+                                            Log.d(
+                                                "calendar", viewModel.recomposeCalendar.toString()
+                                            )
                                             selectedItemIndex = item.id
-                                            viewModel.pressedState = true
+                                            viewModel.pressedState = item.id
                                             viewModel.updateDate(item.id)
                                             viewModel.updateDayId(item.id)
+                                            viewModel.dayId = item.id
                                         }
                                     }
 
                                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                                         if (!isSelected && backgroundColor == initialColor) {
-                                            viewModel.pressedState = false
+                                            viewModel.pressedState = 0
                                         }
                                     }
                                 }
                             }
                             true
-                        }
-                )
+                        })
             }
         }
     }

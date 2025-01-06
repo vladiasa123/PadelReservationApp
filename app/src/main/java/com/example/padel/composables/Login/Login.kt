@@ -76,7 +76,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
 
     fun getTokenFromPreferences(context: Context): String? {
         val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("auth_token", null)  // The second parameter is the default value if the key is not found
+        return sharedPreferences.getString("auth_token", null)
     }
 
 

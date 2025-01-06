@@ -27,23 +27,11 @@ import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.api.RetrofitClient
 import com.example.padel.data.ReservationRequest
 import com.example.padel.data.ReservationResponse
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import java.net.URLDecoder.decode
-import kotlin.io.encoding.ExperimentalEncodingApi
 import android.util.Base64
-import androidx.compose.foundation.Image
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import coil.compose.rememberImagePainter
 import com.example.padel.ViewModels.QRViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -67,6 +55,7 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 scope.launch {
+                    viewModel.reservationPaid = true
                     val reservationRequest = ReservationRequest(
                         viewModel.selectedHour ?: "null",
                         viewModel.selectedDay ?: "null",

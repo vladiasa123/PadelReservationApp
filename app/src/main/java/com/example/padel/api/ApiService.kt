@@ -1,6 +1,8 @@
 package com.example.padel.api
 
 
+import com.example.padel.data.AvailabilityRequest
+import com.example.padel.data.AvailabilityResponse
 import com.example.padel.data.LoginResponse
 import com.example.padel.data.PageAcces
 import com.example.padel.data.PageAccesResponse
@@ -29,7 +31,7 @@ interface ApiService {
     @POST("/req/Reservation")
     suspend fun sendReservation(@Body user: ReservationRequest): Response<ReservationResponse>
 
-    @GET("/req/availability")
-    suspend fun checkAvailability(@Body user: ReservationRequest): Response<ReservationResponse>
+    @POST("/req/availability")
+    suspend fun checkAvailability(@Body user: AvailabilityRequest): Response<AvailabilityResponse>
 
 }
