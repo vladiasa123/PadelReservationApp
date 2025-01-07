@@ -38,10 +38,13 @@ import java.io.FileOutputStream
 
 @Composable
 fun AvailabilityButton(modifier: Modifier = Modifier) {
+
     val qrViewModel: QRViewModel = viewModel()
     val scope = rememberCoroutineScope()
     val viewModel: CalendarViewModel = viewModel()
     val context = LocalContext.current
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +58,6 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 scope.launch {
-                    viewModel.reservationPaid = true
                     val reservationRequest = ReservationRequest(
                         viewModel.selectedHour ?: "null",
                         viewModel.selectedDay ?: "null",

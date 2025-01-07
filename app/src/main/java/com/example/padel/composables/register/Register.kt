@@ -1,4 +1,4 @@
-package com.example.padel.register
+package com.example.padel.composables.register
 
 import android.content.Context
 import android.widget.Toast

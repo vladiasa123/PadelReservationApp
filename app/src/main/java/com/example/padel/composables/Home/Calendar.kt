@@ -19,12 +19,6 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun LazyCalendar() {
-
-
-}
-
-@Composable
 fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Color ) {
     val color = remember { mutableStateOf(colorChanging) }
     Column(
@@ -52,9 +46,4 @@ fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayT
 
         )
     }
-}
-
-@Preview
-@Composable
-fun Preview() {
 }

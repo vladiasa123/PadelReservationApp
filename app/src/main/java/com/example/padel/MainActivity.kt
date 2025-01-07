@@ -12,13 +12,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.padel.MainApp.AdaptiveNavigationScreen
+import com.example.padel.composables.MainApp.AdaptiveNavigationScreen
 import com.example.padel.ViewModels.JwtTokenViewModel
 import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.ViewModels.RegisterLoginViewModel
 import com.example.padel.composables.Login.LoginPage
 import com.example.padel.composables.Profile.ProfilePage
-import com.example.padel.register.RegisterPage
+import com.example.padel.composables.register.RegisterPage
 
 
 class MainActivity : ComponentActivity() {

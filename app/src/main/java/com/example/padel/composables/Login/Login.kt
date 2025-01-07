@@ -53,12 +53,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.padel.ViewModels.RegisterLoginViewModel
 import com.example.padel.api.RetrofitClient
+import com.example.padel.composables.register.showToast
 import com.example.padel.data.LoginResponse
 import com.example.padel.data.UserLoginRequest
-import com.example.padel.register.showToast
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 
 @Composable

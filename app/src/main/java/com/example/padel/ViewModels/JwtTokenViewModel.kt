@@ -9,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.padel.api.RetrofitClient
 import com.example.padel.data.PageAcces
 import com.example.padel.data.PageAccesResponse
-import com.example.padel.register.showToast
+import com.example.padel.composables.register.showToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CoroutineScope
