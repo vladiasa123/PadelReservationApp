@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Color ) {
+fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Color, textColor: Color ) {
     val color = remember { mutableStateOf(colorChanging) }
     Column(
         modifier = modifier
@@ -33,16 +33,16 @@ fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayT
             dayText,
             style = MaterialTheme.typography.displayMedium,
             fontSize = 10.sp,
-            color = Color.Black.copy(alpha = 0.7f)
+            color = textColor
         )
         Text(
-            day, fontSize = 15.sp, style = MaterialTheme.typography.displayMedium
+            day, fontSize = 15.sp, style = MaterialTheme.typography.displayMedium, color = textColor
         )
         Text(
             month,
             style = MaterialTheme.typography.displayMedium,
             fontSize = 10.sp,
-            color = Color.Black.copy(alpha = 0.7f)
+            color = textColor
 
         )
     }

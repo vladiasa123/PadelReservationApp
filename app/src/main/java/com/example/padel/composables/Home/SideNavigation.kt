@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.padel.data.BottomBarIcons
 
 @Composable
-fun SideNavigation() {
+fun SideNavigation(modifier: Modifier) {
     val items = listOf(
         BottomBarIcons.Home, BottomBarIcons.List, BottomBarIcons.Profile
     )

@@ -67,23 +67,27 @@ fun RegisterPage(navController: NavHostController, registerLoginViewModel: Regis
         }
 
         registerLoginViewModel.isLoading.value = true
-        scope.launch {
-            val signupRequest = UserSignupRequest(
-                id = 0,
-                registerLoginViewModel.username.value,
-                registerLoginViewModel.email.value,
-                registerLoginViewModel.password.value
-            )
-            val response: Response<UserSignupRequest> =
-                RetrofitClient.apiService.signup(signupRequest)
+        if (registerLoginViewModel.email.value.contains("@gmail.com") || registerLoginViewModel.email.value.contains("@yahoo.com") || registerLoginViewModel.email.value.contains("@outlook.com")) {
+            scope.launch {
+                val signupRequest = UserSignupRequest(
+                    id = 0,
+                    registerLoginViewModel.username.value,
+                    registerLoginViewModel.email.value,
+                    registerLoginViewModel.password.value,
+                )
+                val response: Response<UserSignupRequest> =
+                    RetrofitClient.apiService.signup(signupRequest)
 
-            registerLoginViewModel.isLoading.value = false
+                registerLoginViewModel.isLoading.value = false
 
-            if (response.isSuccessful) {
-                showToast(context, "Signup successful")
-            } else {
-                showToast(context, "Signup failed: ${response.message()}")
+                if (response.isSuccessful) {
+                    showToast(context, "Signup successful")
+                } else {
+                    showToast(context, "Signup failed: ${response.message()}")
+                }
             }
+        }else{
+            showToast(context, "You need a valid email")
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.padel.composables.Home
 
+import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -41,7 +42,9 @@ import com.example.padel.data.twoHourItems
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Color) {
+fun HourSelection(
+    modifier: Modifier = Modifier, hour: String, colorChanging: Color, textColor: Color
+) {
     Box(
         modifier = Modifier
             .width(5.dp)
@@ -55,6 +58,7 @@ fun HourSelection(modifier: Modifier = Modifier, hour: String, colorChanging: Co
             hour,
             modifier = modifier.padding(top = 2.dp, bottom = 2.dp),
             textAlign = TextAlign.Center,
+            color = textColor
         )
     }
 }
@@ -65,26 +69,31 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
     var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
-    var deactivatedItems = remember { mutableStateOf(mutableSetOf<String?>()) }
-    var sizeAnimation by remember {mutableStateOf(false)}
+    var deactivatedItems by remember { mutableStateOf(setOf<String?>()) }
+    var sizeAnimation by remember { mutableStateOf(false) }
+
+    fun clearDeactivatedItems() {
+        deactivatedItems = emptySet()
+    }
 
     fun deactivateItem(hour: List<String>) {
-        if (viewModel.reservationPaid > 0) {
-            deactivatedItems.value = (deactivatedItems.value + viewModel.unavailableSlots) as MutableSet<String?>
-        }
+        deactivatedItems =
+            (deactivatedItems + viewModel.unavailableSlots) as MutableSet<String?>
     }
 
-    LaunchedEffect(viewModel.reservationPaid){
-        deactivatedItems.value.clear()
-        if(viewModel.reservationPaid > 1){
-            deactivatedItems.value.clear()
-        }
-        if(viewModel.unavailableSlots.isEmpty()){
-            deactivatedItems.value.clear()
-        }
+
+    LaunchedEffect(viewModel.reservationPaid) {
+        if (viewModel.unavailableSlots.isEmpty()) {
+            clearDeactivatedItems()
+            Log.d("items", deactivatedItems.toString())
+        } else {
+            clearDeactivatedItems()
             deactivateItem(viewModel.unavailableSlots)
             selectedItemIndex = null
+        }
+
     }
+
 
 
 
@@ -102,38 +111,45 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
             var initialColor = MaterialTheme.colorScheme.onTertiary
             val secondaryColor = MaterialTheme.colorScheme.secondary
             var isSelected = selectedItemIndex == hourItems.id
-            var isDeactivated = hourItems.timeRange in deactivatedItems.value
+            var isDeactivated = hourItems.timeRange in deactivatedItems
 
             val backgroundColor by animateColorAsState(
                 targetValue = when {
                     isDeactivated -> Color(0xFFF5F5F5)
                     isSelected -> secondaryColor
                     else -> initialColor
-                },
-                animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+            )
+
+            val textColor by animateColorAsState(
+                targetValue = when {
+                    isSelected -> Color.White
+                    else -> Color.Black
+                }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
             )
 
 
-            LaunchedEffect( viewModel.recomposeCalendar){
-                isSelected  = false
+            LaunchedEffect(viewModel.recomposeCalendar) {
+                isSelected = false
             }
             var selected by remember { mutableStateOf(false) }
             val scale by animateFloatAsState(
                 targetValue = if (isSelected) 0.9f else 1f,
                 animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
             )
-            var color =  mutableStateOf(initialColor)
+            var color = mutableStateOf(initialColor)
             val state = rememberLazyListState()
             val stateScrolling = state.isScrollInProgress
             HourSelection(hour = hourItems.timeRange,
                 colorChanging = backgroundColor,
+                textColor = textColor,
                 modifier = Modifier
                     .scale(scale)
                     .pointerInteropFilter {
                         if (!stateScrolling) {
                             when (it.action) {
                                 MotionEvent.ACTION_DOWN -> {
-                                    if (isDeactivated) {
+                                    if (isDeactivated and deactivatedItems.isNotEmpty()) {
                                         return@pointerInteropFilter false
                                     }
                                     if (isSelected) {
@@ -149,7 +165,6 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
 
                                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                                     if (!isSelected && backgroundColor == initialColor) {
-                                        viewModel.pressedState = 0
                                         sizeAnimation = false
                                     }
                                 }
@@ -158,7 +173,8 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                         true
                     })
         }
-    }}
+    }
+}
 
 
 @Preview

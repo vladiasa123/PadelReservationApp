@@ -2,13 +2,13 @@ package com.example.padel.data
 
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Year
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
 
 data class Hours(val timeRange: String, val id: Int)
-
 
 
 //Generates one hour intervals
@@ -76,6 +76,9 @@ fun generateDaysForMonth(month: Int, year: Int, currentDate: LocalDate): List<Ca
     }.filterNotNull()
 }
 
+
+
 val calendarItems = generateDaysForMonth(
     month = LocalDate.now().monthValue, year = LocalDate.now().year, currentDate = LocalDate.now()
 )
+

@@ -12,18 +12,27 @@ import com.example.padel.data.twoHourItems
 
 class CalendarViewModel : ViewModel() {
 
-    var datesAdded by mutableStateOf(false)
-    var firstLaunchedEffects by  mutableStateOf(false)
+    var hourInterval by mutableStateOf("")
+
+    var reservedHour by mutableStateOf(false)
 
 
-    var unavailableSlots: MutableList<String> = mutableListOf()
+    var unavailableSlots by mutableStateOf(listOf<String>())
+        private set
+
+    var usersReservations: MutableList<String> = mutableListOf()
         private set
 
 
+
     fun addUnavailableSlot(slot: List<String>) {
-        unavailableSlots.clear()
-        unavailableSlots.addAll(slot)
+        unavailableSlots = slot
     }
+
+    fun clearUnavailableSlot() {
+        unavailableSlots = emptyList()
+    }
+
 
 
 

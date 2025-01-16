@@ -17,6 +17,7 @@ class RegisterLoginViewModel: ViewModel() {
     var email: MutableState<String> = mutableStateOf("")
     var password: MutableState<String> = mutableStateOf("")
     var isLoading: MutableState<Boolean> = mutableStateOf(false)
+    var userId: MutableState<Int> = mutableStateOf(0)
 
 
     fun fetchExampleData() {

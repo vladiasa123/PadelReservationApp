@@ -50,7 +50,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.padel.ViewModels.JwtTokenViewModel
 import com.example.padel.ViewModels.RegisterLoginViewModel
 import com.example.padel.api.RetrofitClient
 import com.example.padel.composables.register.showToast
@@ -63,6 +65,7 @@ import retrofit2.Response
 fun LoginPage(navController: NavHostController, registerLoginViewModel: RegisterLoginViewModel) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val jwtTokenViewModel: JwtTokenViewModel = viewModel()
 
     fun saveTokenToPreferences(token: String) {
         val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -99,6 +102,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                 loginResponse?.let {
                     val extractedToken = it.token
                     saveTokenToPreferences(extractedToken)
+                    jwtTokenViewModel.decodeToken(extractedToken)
                    val savedToken =  getTokenFromPreferences(context)
                     Log.d("Saved Token", "Saved token: $savedToken")
                     showToast(context, "Login successful, token saved")
@@ -109,6 +113,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
             } else {
                 showToast(context, "Login failed: ${response.message()}")
             }
+
         }
     }
 
@@ -197,7 +202,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                         Text("Don't have an account?",
                             modifier = Modifier
                                 .padding(start = 160.dp)
-                                .clickable { navController.navigate("ScreenD") })
+                                .clickable { navController.navigate("ScreenE") })
                         Button(
                             onClick = { handleLogin() },
                             modifier = Modifier

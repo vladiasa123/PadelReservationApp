@@ -1,6 +1,5 @@
 package com.example.padel.composables.Profile
 
-import android.util.Log
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -9,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,9 +22,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -33,37 +33,53 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.padel.R
 import com.example.padel.ViewModels.JwtTokenViewModel
 import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.composables.HeaderText
-import kotlinx.coroutines.launch
+import com.example.padel.composables.Home.BottomNavigation
+import com.example.padel.composables.Home.SideNavigation
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfilePage(viewModel: ProfileViewModel, jwtViewModel: JwtTokenViewModel) {
+fun ProfileScreen(navController: NavHostController) {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+    Scaffold(topBar = {
+        if (screenWidthDp > 600) {
+            SideNavigation(Modifier.Companion.zIndex(2F))
+        }
+    }, bottomBar = {
+        if (screenWidthDp < 600) {
+            BottomNavigation(navController = navController)
+        }
+    }, content = { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally
+        ) {
+            var viewModel: ProfileViewModel = viewModel()
+            var jwtViewModel: JwtTokenViewModel = viewModel()
+            ProfilePage(viewModel =  viewModel, jwtViewModel = jwtViewModel, paddingValues = paddingValues)
+        }
+    })
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfilePage(viewModel: ProfileViewModel, jwtViewModel: JwtTokenViewModel, paddingValues: PaddingValues = PaddingValues()) {
 
     val scope = rememberCoroutineScope( )
     val context = LocalContext.current
-
-
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            val token = jwtViewModel.getToken()
-            jwtViewModel.verifyAcces(token, context, scope )
-            if (token != null) {
-                Log.d("ProfilePage", "Token: $token")
-            } else {
-                Log.d("ProfilePage", "Token is null")
-            }
-        }
-    }
-
 
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
         val animateState = viewModel.animatedState
@@ -138,6 +154,7 @@ fun ProfilePage(viewModel: ProfileViewModel, jwtViewModel: JwtTokenViewModel) {
         }
     }
 }
+
 
 
 

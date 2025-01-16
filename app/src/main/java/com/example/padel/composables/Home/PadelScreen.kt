@@ -25,6 +25,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,7 +51,6 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
 
 
 
-
     LaunchedEffect(viewModel.recomposeCalendar) {
         scope.launch {
             val accesibilityRequest = AvailabilityRequest(
@@ -58,12 +58,16 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
             )
             val response: Response<AvailabilityResponse> =
                 RetrofitClient.apiService.checkAvailability(accesibilityRequest)
-            if (response.isSuccessful) {
+            if (response.isSuccessful && response.body()?.availableSlots != null) {
                 response.body()?.availableSlots?.let { slots ->
                     viewModel.addUnavailableSlot(slots)
-
+                    viewModel.reservationPaid++
+                    Log.d("slots", viewModel.usersReservations.toString())
                 }
                 Log.d("slots", viewModel.unavailableSlots.toString())
+            }else{
+                viewModel.addUnavailableSlot(emptyList())
+                viewModel.reservationPaid++
             }
         }
     }
@@ -89,6 +93,13 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
                 )
 
+                val textColor by animateColorAsState(
+                    targetValue = when {
+                        isSelected -> Color.White
+                        else -> Color.Black
+                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                )
+
                 val scale by animateFloatAsState(
                     targetValue = if (isSelected) 0.9f else 1f,
                     animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
@@ -102,6 +113,7 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     day = item.dayNumber,
                     dayText = item.day,
                     colorChanging = backgroundColor,
+                    textColor = textColor,
                     modifier = Modifier
                         .scale(scale)
                         .padding(5.dp)
@@ -111,17 +123,13 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                             if (!stateScrolling) {
                                 when (it.action) {
                                     MotionEvent.ACTION_DOWN -> {
-                                        viewModel.recomposeCalendar++
                                         if (isSelected) {
                                             Log.d("press", "firstpress")
                                             selectedItemIndex = null
                                             viewModel.pressedState = 0
                                         } else {
                                             Log.d("press", "second")
-                                            Log.d(
-                                                "calendar", viewModel.recomposeCalendar.toString()
-                                            )
-                                            viewModel.reservationPaid++
+                                            viewModel.recomposeCalendar++
                                             selectedItemIndex = item.id
                                             viewModel.pressedState = 0
                                             viewModel.pressedState = item.id

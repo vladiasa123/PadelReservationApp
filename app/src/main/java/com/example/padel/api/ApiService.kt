@@ -10,6 +10,7 @@ import com.example.padel.data.ReservationRequest
 import com.example.padel.data.ReservationResponse
 import com.example.padel.data.UserLoginRequest
 import com.example.padel.data.UserSignupRequest
+import com.example.padel.data.UsersReservation
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -33,5 +34,8 @@ interface ApiService {
 
     @POST("/req/availability")
     suspend fun checkAvailability(@Body user: AvailabilityRequest): Response<AvailabilityResponse>
+
+    @POST("req/userReservation")
+    suspend fun getUsersReservations(@Body user: UsersReservation): Response<ReservationResponse>
 
 }

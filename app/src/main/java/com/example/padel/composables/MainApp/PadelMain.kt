@@ -1,5 +1,7 @@
 package com.example.padel.composables.MainApp
 
+
+import UpwardPopUpCard
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -44,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,143 +55,142 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.padel.ViewModels.CalendarViewModel
+import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.ViewModels.QRViewModel
-import com.example.padel.composables.Home.AvailabilityButton
 import com.example.padel.composables.Home.BottomNavigation
 import com.example.padel.composables.Home.HourSelectionGrid
 import com.example.padel.composables.Home.PadelDatesLazy
-import com.example.padel.composables.Home.SideNavigation
+import com.skydoves.cloudy.Cloudy
 import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdaptiveNavigationScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
-    Scaffold(topBar = {
-        if (screenWidthDp > 600) {
-            SideNavigation()
-        }
-    }, bottomBar = {
-        if (screenWidthDp < 600) {
-            BottomNavigation(navController = navController)
-        }
-    }, content = { paddingValues ->
-        Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+    val viewModel: CalendarViewModel = viewModel()
+    val density = LocalDensity.current
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            bottomBar = {
+                if (screenWidthDp < 600) {
+                    BottomNavigation(navController = navController)
+                }
+            },
+            content = { paddingValues ->
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    SideNav(paddingValues = paddingValues)
+                }
+            }
+        )
+        AnimatedVisibility(
+            visible = viewModel.buttonPressedState,
+            enter = slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = tween(durationMillis = 500)
+            )
         ) {
-            SideNav(paddingValues = paddingValues)
+            UpwardPopUpCard()
         }
-    })
+    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
+fun SideNav(paddingValues: PaddingValues = PaddingValues(), modifier: Modifier = Modifier) {
     val viewModel: CalendarViewModel = viewModel()
+    val profileViewModel: ProfileViewModel = viewModel()
     val qrViewModel: QRViewModel = viewModel()
     val density = LocalDensity.current
 
     val animationForVisibility = slideInVertically(
-        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
-    ) + expandVertically(expandFrom = Alignment.Top) + fadeIn(initialAlpha = 0.3f)
+        initialOffsetY = { with(density) { 100.dp.roundToPx() } } // Starts from below
+    ) + expandVertically(expandFrom = Alignment.Bottom) + fadeIn(initialAlpha = 0.3f)
 
     val animationForVisibilityQR = slideInVertically(
         initialOffsetY = { with(density) { -40.dp.roundToPx() } }
     ) + expandVertically(expandFrom = Alignment.Top) + fadeIn(initialAlpha = 0.3f)
+    Box(modifier = Modifier.then(
+        if (viewModel.buttonPressedState && !profileViewModel.tappedOutside.value) Modifier.blur(10.dp) else Modifier
+    )) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AnimatedVisibility(
+                visible = qrViewModel.QrCodeShowing.collectAsState().value == 1,
+                enter = animationForVisibilityQR,
+                exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            ) {
+                Box {
+                    ImageQr()
+                }
+            }
 
-    AnimatedVisibility(
-        visible = qrViewModel.QrCodeShowing.collectAsState().value == 1,
-        enter = animationForVisibilityQR,
-        exit = slideOutVertically() + shrinkVertically() + fadeOut()
-    ) {
-        Box {
-            ImageQr()
-        }
-    }
-
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp
-    val contentModifier = if (screenWidthDp < 600) {
-        Modifier.padding(16.dp)
-    } else {
-        Modifier.fillMaxSize()
-    }
-
-
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-            .padding(paddingValues)
-            .heightIn(min = 0.dp, max = 800.dp)
-    ) {
-        Text(
-            "Choose a date",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
-        )
-        PadelDatesLazy(
-            modifier = Modifier, viewModel = viewModel
-        )
-        Text(
-            "Choose a hour",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
-        )
-        AnimatedVisibility(
-            visible = viewModel.pressedState > 0,
-            enter = animationForVisibility,
-            exit = slideOutVertically() + shrinkVertically() + fadeOut()
-        ) {
-            Column {
-                Row {
-                    Button(
-                        modifier = Modifier.padding(start = 10.dp),
-                        onClick = { viewModel.selectedHours = false },
-                        border = BorderStroke(
-                            2.dp,
-                            MaterialTheme.colorScheme.inverseOnSurface
-                        ),
-                        shape = RoundedCornerShape(20)
-                    ) {
-                        Text("1 hour")
-                    }
-                    Button(
-                        onClick = { viewModel.selectedHours = true },
-                        border = BorderStroke(
-                            2.dp,
-                            MaterialTheme.colorScheme.inverseOnSurface
-                        ),
-                        shape = RoundedCornerShape(20),
-                        modifier = Modifier.padding(start = 10.dp)
-                    ) {
-                        Text("2 hours")
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .padding(paddingValues)
+                    .heightIn(min = 0.dp, max = 800.dp)
+            ) {
+                Text(
+                    "Choose a date",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
+                )
+                PadelDatesLazy(
+                    modifier = Modifier, viewModel = viewModel
+                )
+                Text(
+                    "Choose a hour",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
+                )
+                AnimatedVisibility(
+                    visible = viewModel.pressedState > 0,
+                    enter = animationForVisibility,
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        Row {
+                            Button(
+                                modifier = Modifier.padding(start = 10.dp),
+                                onClick = { viewModel.selectedHours = false },
+                                border = BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.inverseOnSurface
+                                ),
+                                shape = RoundedCornerShape(20)
+                            ) {
+                                Text("1 hour")
+                            }
+                            Button(
+                                onClick = { viewModel.selectedHours = true },
+                                border = BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.inverseOnSurface
+                                ),
+                                shape = RoundedCornerShape(20),
+                                modifier = Modifier.padding(start = 10.dp)
+                            ) {
+                                Text("2 hours")
+                            }
+                        }
+                        HourSelectionGrid(
+                            Modifier
+                                .padding(10.dp)
+                                .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
+                            viewModel = viewModel,
+                        )
                     }
                 }
-                HourSelectionGrid(
-                    Modifier
-                        .padding(10.dp)
-                        .border(2.dp, MaterialTheme.colorScheme.inverseOnSurface),
-                    viewModel = viewModel,
-                )
-            }
-        }
-        AnimatedVisibility(
-            visible = viewModel.buttonPressedState,
-            enter = animationForVisibility,
-            exit = slideOutVertically() + shrinkVertically() + fadeOut()
-        ) {
-            Box(modifier = Modifier.padding(top = 50.dp)) {
-                AvailabilityButton()
             }
         }
     }
 }
-
-
 
 
 @Composable

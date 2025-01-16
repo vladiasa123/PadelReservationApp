@@ -2,6 +2,7 @@ package com.example.padel.composables.Home
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -31,7 +32,9 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import android.util.Base64
 import androidx.compose.ui.platform.LocalContext
+import com.example.padel.ViewModels.JwtTokenViewModel
 import com.example.padel.ViewModels.QRViewModel
+import com.example.padel.ViewModels.RegisterLoginViewModel
 import java.io.File
 import java.io.FileOutputStream
 
@@ -43,6 +46,10 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val viewModel: CalendarViewModel = viewModel()
     val context = LocalContext.current
+    val jwtViewModel: JwtTokenViewModel = viewModel()
+
+
+
 
 
     Column(
@@ -58,12 +65,22 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 scope.launch {
-                    val reservationRequest = ReservationRequest(
-                        viewModel.selectedHour ?: "null",
-                        viewModel.selectedDay ?: "null",
-                        (viewModel.selectedDayId ?: "null").toString()
+                    val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val token = sharedPreferences.getString("auth_token", null)
+                    if(token != null){
+                        jwtViewModel.decodeToken(token)
+                    }
+                        val userId = jwtViewModel.usersId.value
+                        Log.d("User ID", "Decoded User ID: $userId")
 
-                    )
+                        viewModel.reservedHour = true
+                        val reservationRequest = ReservationRequest(
+                            viewModel.selectedHour ?: "null",
+                            viewModel.selectedDay ?: "null",
+                            (viewModel.selectedDayId ?: "null").toString(),
+                            userId = userId.toString()
+
+                        )
                     val response: Response<ReservationResponse> = RetrofitClient.apiService.sendReservation(reservationRequest)
 
                     if(response.isSuccessful){
@@ -75,6 +92,7 @@ fun AvailabilityButton(modifier: Modifier = Modifier) {
                           val image =  Base64toBitmap(it.message)
                             val fileName = "reservation.png"
                             val isSaved = saveBitmapToInternalStorage(context , image, fileName)
+                            viewModel.hourInterval = reservationResponse.userReservations.toString()
                             if(isSaved){
                                 Log.d("saving", "Image saved succesfully")
                                 qrViewModel.updateQrCodeShowing(1)
