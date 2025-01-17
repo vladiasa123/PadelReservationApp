@@ -11,7 +11,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/vladiasa123/AplicatiePadel">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="https://galmmtmm.ro/wp-content/uploads/2025/01/padel-logo-Copy.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">Padel Reservation App</h3>
