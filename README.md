@@ -54,7 +54,7 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://galmmtmm.ro/wp-content/uploads/2024/12/banner.png)
+[![Product Name Screen Shot][product-screenshot]](https://galmmtmm.ro/wp-content/uploads/2025/01/banner-Copy.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
