@@ -1,23 +1,5 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 
 <a id="readme-top"></a>
-
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -26,11 +8,10 @@
 [![project_license][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/vladiasa123/AplicatiePadel">
-    <img src="https://github.com/vladiasa123/AplicatiePadel/blob/main/padel%20logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">Padel Reservation App</h3>
@@ -47,7 +28,7 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
+
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -69,20 +50,22 @@
   </ol>
 </details>
 
-<!-- ABOUT THE PROJECT -->
+
 
 ## About The Project
 
+[![Product Name Screen Shot][product-screenshot]](https://galmmtmm.ro/wp-content/uploads/2024/12/banner.png)
 
- <img src="https://github.com/vladiasa123/AplicatiePadel/blob/main/banner.png" alt="Logo" >
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
 - [![Kotlin][JQuery.com]][JQuery-url]
+- [![Spring][Spring.com]][JQuery-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- GETTING STARTED -->
 
 ## Getting Started
 
@@ -108,19 +91,17 @@ To get a local copy up and running follow these simple example steps.
    git remote -v
    ```
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Pages
 
- <img href="#Pages" src="https://github.com/vladiasa123/AplicatiePadel/blob/main/loginScreenShot.png" alt="Logo" height = 300px>
-Login Screen
+<img href="#Pages" src="https://galmmtmm.ro/wp-content/uploads/2025/01/Screenshot-2025-01-17-124154.png" alt="Logo" height = 300px>Login Screen
+<img src="https://galmmtmm.ro/wp-content/uploads/2025/01/Screenshot-2025-01-17-124208.png" alt="Logo" height = 300px> Choosing Dates and time screen
+<img src="https://galmmtmm.ro/wp-content/uploads/2025/01/Screenshot-2025-01-17-124214.png" alt="Logo" height = 300px> Pop-Up for reserving
+<img src="https://galmmtmm.ro/wp-content/uploads/2025/01/Screenshot-2025-01-17-124220.png" alt="Logo" height = 300px> Users reservations and qr code
+<img src="https://galmmtmm.ro/wp-content/uploads/2025/01/Screenshot-2025-01-17-124224.png" alt="Logo" height = 300px> Profile Page
 
-  <img src="https://github.com/vladiasa123/AplicatiePadel/blob/main/ReservationScreenShot.png" alt="Logo" height = 300px>
-  Choosing Dates and time screen
-   <img src="https://github.com/vladiasa123/AplicatiePadel/blob/main/ProfileScreenShot.png" alt="Logo" height = 300px>
-   Profile screen
-    <img src="https://github.com/vladiasa123/AplicatiePadel/blob/main/EditProfileScreenshot.png" alt="Logo" height = 300px>
-    Edit profile screen
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Contact
 
@@ -158,4 +139,6 @@ Project Link: [https://github.com/vladiasa123/AplicatiePadel](https://github.com
 [Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white
+[Spring.com]: https://img.shields.io/badge/SpringBoot-6DB33F?style=flat-square&logo=Spring&logoColor=white
 [JQuery-url]: https://jquery.com
+****
