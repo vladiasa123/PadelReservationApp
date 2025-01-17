@@ -13,7 +13,7 @@ import com.example.padel.data.BottomBarIcons
 @Composable
 fun BottomNavigation(navController: NavController) {
     val items = listOf(
-        BottomBarIcons.Home, BottomBarIcons.List, BottomBarIcons.Profile
+        BottomBarIcons.Home, BottomBarIcons.Booking, BottomBarIcons.MyReservations, BottomBarIcons.Profile,
     )
     NavigationBar {
         items.forEach { item ->

@@ -90,19 +90,19 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     targetValue = when {
                         isSelected -> secondaryColor
                         else -> initialColor
-                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
                 )
 
                 val textColor by animateColorAsState(
                     targetValue = when {
                         isSelected -> Color.White
                         else -> Color.Black
-                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
                 )
 
                 val scale by animateFloatAsState(
                     targetValue = if (isSelected) 0.9f else 1f,
-                    animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                    animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
                 )
 
 

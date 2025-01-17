@@ -23,8 +23,8 @@ fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayT
     val color = remember { mutableStateOf(colorChanging) }
     Column(
         modifier = modifier
-            .width(50.dp)
-            .height(50.dp)
+            .width(65.dp)
+            .height(65.dp)
             .background(colorChanging),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -32,16 +32,16 @@ fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayT
         Text(
             dayText,
             style = MaterialTheme.typography.displayMedium,
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             color = textColor
         )
         Text(
-            day, fontSize = 15.sp, style = MaterialTheme.typography.displayMedium, color = textColor
+            day, fontSize = 17.sp, style = MaterialTheme.typography.displayMedium, color = textColor
         )
         Text(
             month,
             style = MaterialTheme.typography.displayMedium,
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             color = textColor
 
         )

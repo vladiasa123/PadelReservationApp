@@ -53,6 +53,7 @@ dependencies {
 
 
     implementation("androidx.compose.material3:material3:1.0.0-alpha12")
+    implementation ("com.gocardless:gocardlesssdk:1.0.0")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     implementation ("com.github.skydoves:cloudy:0.1.2")
     implementation ("io.coil-kt:coil-compose:2.2.2")

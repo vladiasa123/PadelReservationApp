@@ -9,8 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class QRViewModel: ViewModel() {
-    private val _qrCodeShowing = MutableStateFlow(0)  // 0 means it's not showing
-    val QrCodeShowing: StateFlow<Int> = _qrCodeShowing
+    private val _qrCodeShowing = MutableStateFlow(0)
 
     fun updateQrCodeShowing(state: Int){
         _qrCodeShowing.value = state

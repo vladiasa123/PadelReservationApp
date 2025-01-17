@@ -53,24 +53,10 @@ import com.example.padel.composables.Home.SideNavigation
 fun ProfileScreen(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
-    Scaffold(topBar = {
-        if (screenWidthDp > 600) {
-            SideNavigation(Modifier.Companion.zIndex(2F))
-        }
-    }, bottomBar = {
-        if (screenWidthDp < 600) {
-            BottomNavigation(navController = navController)
-        }
-    }, content = { paddingValues ->
-        Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally
-        ) {
             var viewModel: ProfileViewModel = viewModel()
             var jwtViewModel: JwtTokenViewModel = viewModel()
-            ProfilePage(viewModel =  viewModel, jwtViewModel = jwtViewModel, paddingValues = paddingValues)
+            ProfilePage(viewModel =  viewModel, jwtViewModel = jwtViewModel)
         }
-    })
-}
 
 
 

@@ -35,10 +35,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,10 +55,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.ViewModels.QRViewModel
-import com.example.padel.composables.Home.BottomNavigation
 import com.example.padel.composables.Home.HourSelectionGrid
 import com.example.padel.composables.Home.PadelDatesLazy
-import com.skydoves.cloudy.Cloudy
 import java.io.File
 
 
@@ -72,25 +68,15 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
     val viewModel: CalendarViewModel = viewModel()
     val density = LocalDensity.current
     Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            bottomBar = {
-                if (screenWidthDp < 600) {
-                    BottomNavigation(navController = navController)
-                }
-            },
-            content = { paddingValues ->
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SideNav(paddingValues = paddingValues)
-                }
-            }
-        )
+        SideNav()
         AnimatedVisibility(
             visible = viewModel.buttonPressedState,
             enter = slideInVertically(
                 initialOffsetY = { it },
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { it },
                 animationSpec = tween(durationMillis = 500)
             )
         ) {
@@ -109,26 +95,16 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues(), modifier: Modifier =
     val density = LocalDensity.current
 
     val animationForVisibility = slideInVertically(
-        initialOffsetY = { with(density) { 100.dp.roundToPx() } } // Starts from below
+        initialOffsetY = { with(density) { 100.dp.roundToPx() } }
     ) + expandVertically(expandFrom = Alignment.Bottom) + fadeIn(initialAlpha = 0.3f)
 
     val animationForVisibilityQR = slideInVertically(
         initialOffsetY = { with(density) { -40.dp.roundToPx() } }
     ) + expandVertically(expandFrom = Alignment.Top) + fadeIn(initialAlpha = 0.3f)
     Box(modifier = Modifier.then(
-        if (viewModel.buttonPressedState && !profileViewModel.tappedOutside.value) Modifier.blur(10.dp) else Modifier
+        if (viewModel.buttonPressedState) Modifier.blur(10.dp) else Modifier
     )) {
         Box(modifier = Modifier.fillMaxSize()) {
-            AnimatedVisibility(
-                visible = qrViewModel.QrCodeShowing.collectAsState().value == 1,
-                enter = animationForVisibilityQR,
-                exit = slideOutVertically() + shrinkVertically() + fadeOut()
-            ) {
-                Box {
-                    ImageQr()
-                }
-            }
-
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())

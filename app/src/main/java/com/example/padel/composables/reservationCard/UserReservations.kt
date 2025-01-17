@@ -63,25 +63,7 @@ import java.io.File
 fun ReservationsScreen(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
-    Scaffold(topBar = {
-        if (screenWidthDp > 600) {
-            SideNavigation(Modifier.Companion.zIndex(2F))
-        }
-    }, bottomBar = {
-        if (screenWidthDp < 600) {
-            BottomNavigation(navController = navController)
-        }
-    }, content = { paddingValues ->
-        Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val context = LocalContext.current
-            UserReservations(
-                paddingValues = paddingValues,
-                viewModel = CalendarViewModel(),
-            )
-        }
-    })
+            UserReservations()
 }
 
 
@@ -90,17 +72,20 @@ fun ReservationsScreen(navController: NavHostController) {
 fun UserReservations(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(),
-    viewModel: CalendarViewModel,
 ) {
     val lazyListState = rememberLazyListState()
     val snapFlingBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
-    val imageLocation = "/data/data/com.example.padel/files/reservation.png"
-    var hourInterval by remember { mutableStateOf("") }
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp
     val scope = rememberCoroutineScope()
     val jwtTokenViewModel: JwtTokenViewModel = viewModel()
     var hourIntervals by remember { mutableStateOf(mutableListOf<String>()) }
+
+    val imageFolderPath = "/data/data/com.example.padel/files/"
+    val imageFiles = File(imageFolderPath).listFiles { file ->
+        file.extension.lowercase() in listOf("png", "jpg", "jpeg", "gif")
+    }?.toList() ?: emptyList()
+
+    val combinedList = hourIntervals.zip(imageFiles)
+
 
 
 
@@ -133,7 +118,7 @@ fun UserReservations(
         flingBehavior = snapFlingBehavior,
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(hourItems) { item ->
+        items(combinedList) { (hour, imageFiles) ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -156,7 +141,7 @@ fun UserReservations(
                     style = MaterialTheme.typography.titleSmall
                 )
                 Text(
-                    text = "$hourIntervals",
+                    text = "$hour",
                     modifier = Modifier
                         .fillParentMaxWidth()
                         .padding(end = 150.dp, bottom = 20.dp),
@@ -171,7 +156,7 @@ fun UserReservations(
                     elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
                     Image(
-                        painter = rememberAsyncImagePainter(model = File(imageLocation)),
+                        painter = rememberAsyncImagePainter(model = imageFiles),
                         contentDescription = "A description of the image or null if decorative",
                         modifier = Modifier
                             .padding(top = 30.dp, bottom = 30.dp)

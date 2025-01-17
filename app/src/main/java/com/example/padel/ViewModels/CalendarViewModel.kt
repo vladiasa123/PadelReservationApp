@@ -24,6 +24,8 @@ class CalendarViewModel : ViewModel() {
         private set
 
 
+    var isSelected by mutableStateOf<Boolean>(false)
+
 
     fun addUnavailableSlot(slot: List<String>) {
         unavailableSlots = slot

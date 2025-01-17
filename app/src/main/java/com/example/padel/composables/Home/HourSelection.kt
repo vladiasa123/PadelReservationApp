@@ -6,6 +6,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,18 +50,18 @@ fun HourSelection(
     Box(
         modifier = Modifier
             .width(5.dp)
-            .height(45.dp)
+            .height(55.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(colorChanging), contentAlignment = Alignment.Center
 
 
     ) {
-        Text(
-            hour,
-            modifier = modifier.padding(top = 2.dp, bottom = 2.dp),
-            textAlign = TextAlign.Center,
-            color = textColor
-        )
+            Text(
+                hour,
+                modifier = modifier.padding(top = 2.dp, bottom = 2.dp),
+                textAlign = TextAlign.Center,
+                color = textColor
+            )
     }
 }
 
@@ -104,7 +106,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
         modifier = if (screenWidthDp > 600) {
             Modifier.padding(100.dp)
         } else {
-            Modifier.padding(15.dp)
+            Modifier.padding(15.dp).border(2.dp, MaterialTheme.colorScheme.inverseOnSurface).padding(15.dp)
         }
     ) {
         items(if (viewModel.selectedHours) twoHourItems else hourItems) { hourItems ->
@@ -132,12 +134,12 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
             LaunchedEffect(viewModel.recomposeCalendar) {
                 isSelected = false
             }
-            var selected by remember { mutableStateOf(false) }
+
             val scale by animateFloatAsState(
                 targetValue = if (isSelected) 0.9f else 1f,
                 animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
             )
-            var color = mutableStateOf(initialColor)
+
             val state = rememberLazyListState()
             val stateScrolling = state.isScrollInProgress
             HourSelection(hour = hourItems.timeRange,
