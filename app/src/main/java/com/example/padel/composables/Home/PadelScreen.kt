@@ -123,6 +123,10 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                             if (!stateScrolling) {
                                 when (it.action) {
                                     MotionEvent.ACTION_DOWN -> {
+
+                                    }
+
+                                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                                         if (isSelected) {
                                             Log.d("press", "firstpress")
                                             selectedItemIndex = null
@@ -137,9 +141,6 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                                             viewModel.updateDayId(item.id)
                                             viewModel.dayId = item.id
                                         }
-                                    }
-
-                                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                                     }
                                 }
                             }
