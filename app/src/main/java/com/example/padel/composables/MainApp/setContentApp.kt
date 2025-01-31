@@ -1,5 +1,6 @@
 package com.example.padel.composables.MainApp
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -27,6 +28,7 @@ import com.example.padel.composables.Profile.ProfileScreen
 import com.example.padel.composables.register.RegisterPage
 import com.example.padel.composables.reservationCard.ReservationsScreen
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
@@ -41,7 +43,7 @@ fun App() {
         if (currentRoute != null) {
             Log.d("route", currentRoute)
         }
-        if(currentRoute == "screenA" || currentRoute == "screenD"){
+        if(currentRoute == "screenA"){
             screenWithoutBottomBar = true
         }
 
@@ -91,15 +93,13 @@ fun App() {
                     )
                 }
                 composable("screenB") {
-                    HomeScreen(navController = navController)
+                    HomeScreen()
                 }
                 composable("screenC") {
-                    val viewModel: ProfileViewModel = viewModel()
-                    val jwtViewModel: JwtTokenViewModel = viewModel()
                     ProfileScreen(navController = navController)
                 }
                 composable("screenD") {
-                    ReservationsScreen(navController = navController)
+                    ReservationsScreen()
                 }
                 composable("screenE") {
                     val registerViewModel: RegisterLoginViewModel = viewModel()

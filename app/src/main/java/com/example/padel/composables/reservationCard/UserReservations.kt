@@ -1,5 +1,6 @@
 package com.example.padel.composables.reservationCard
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +25,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,19 +37,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.ViewModels.JwtTokenViewModel
 import com.example.padel.api.RetrofitClient
-import com.example.padel.composables.Home.BottomNavigation
-import com.example.padel.composables.Home.SideNavigation
 import com.example.padel.data.ReservationResponse
 import com.example.padel.data.UsersReservation
 import com.example.padel.data.hourItems
@@ -58,20 +54,15 @@ import retrofit2.Response
 import java.io.File
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReservationsScreen(navController: NavHostController) {
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp
-            UserReservations()
+fun ReservationsScreen() {
+    UserReservations()
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserReservations(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(),
 ) {
     val lazyListState = rememberLazyListState()
     val snapFlingBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
@@ -87,11 +78,7 @@ fun UserReservations(
     val combinedList = hourIntervals.zip(imageFiles)
 
 
-
-
-
-
-    LaunchedEffect(Unit) {
+     LaunchedEffect(Unit) {
         val token = jwtTokenViewModel.getToken()
         jwtTokenViewModel.decodeToken(token.toString())
         scope.launch {
@@ -112,11 +99,8 @@ fun UserReservations(
 
 
 
-
     LazyRow(
-        state = lazyListState,
-        flingBehavior = snapFlingBehavior,
-        modifier = Modifier.fillMaxWidth()
+         state = lazyListState, flingBehavior = snapFlingBehavior,  modifier = Modifier.fillMaxWidth()
     ) {
         items(combinedList) { (hour, imageFiles) ->
             Column(
@@ -223,9 +207,7 @@ fun UserReservations(
                         colors = ButtonDefaults.elevatedButtonColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                        onClick = { /*TODO*/ },
-                        shape = RoundedCornerShape(10.dp)
+                        ), onClick = { /*TODO*/ }, shape = RoundedCornerShape(10.dp)
                     ) {
                         Text("Location")
                     }
@@ -245,5 +227,14 @@ fun UserReservations(
         }
     }
 }
+
+
+@Preview
+@Composable
+fun preview() {
+    UserReservations()
+}
+
+
 
 

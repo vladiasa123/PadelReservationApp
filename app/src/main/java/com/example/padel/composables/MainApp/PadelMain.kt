@@ -60,13 +60,9 @@ import com.example.padel.composables.Home.PadelDatesLazy
 import java.io.File
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) {
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp
+fun HomeScreen() {
     val viewModel: CalendarViewModel = viewModel()
-    val density = LocalDensity.current
     Box(modifier = Modifier.fillMaxSize()) {
         SideNav()
         AnimatedVisibility(
@@ -86,21 +82,15 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SideNav(paddingValues: PaddingValues = PaddingValues(), modifier: Modifier = Modifier) {
+fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
     val viewModel: CalendarViewModel = viewModel()
-    val profileViewModel: ProfileViewModel = viewModel()
-    val qrViewModel: QRViewModel = viewModel()
     val density = LocalDensity.current
 
     val animationForVisibility = slideInVertically(
         initialOffsetY = { with(density) { 100.dp.roundToPx() } }
     ) + expandVertically(expandFrom = Alignment.Bottom) + fadeIn(initialAlpha = 0.3f)
 
-    val animationForVisibilityQR = slideInVertically(
-        initialOffsetY = { with(density) { -40.dp.roundToPx() } }
-    ) + expandVertically(expandFrom = Alignment.Top) + fadeIn(initialAlpha = 0.3f)
     Box(modifier = Modifier.then(
         if (viewModel.buttonPressedState) Modifier.blur(10.dp) else Modifier
     )) {

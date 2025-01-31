@@ -8,6 +8,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +47,17 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
     val initialColor = MaterialTheme.colorScheme.onTertiary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
+    val state = rememberLazyListState()
+
+    val isScrolling = remember { mutableStateOf(false) }
+
+    LaunchedEffect(state) {
+        snapshotFlow { state.isScrollInProgress }
+            .collect { scrollingInProgress ->
+                isScrolling.value = scrollingInProgress
+                Log.d("Scroll", isScrolling.value.toString())
+            }
+    }
 
 
     val scope = rememberCoroutineScope()
@@ -65,13 +78,12 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     Log.d("slots", viewModel.usersReservations.toString())
                 }
                 Log.d("slots", viewModel.unavailableSlots.toString())
-            }else{
+            } else {
                 viewModel.addUnavailableSlot(emptyList())
                 viewModel.reservationPaid++
             }
         }
     }
-
 
     Box(
         modifier = modifier
@@ -82,7 +94,12 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                 shape = RoundedCornerShape(2.dp)
             ),
     ) {
-        LazyRow {
+
+
+        LazyRow(
+            state = state,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             items(calendarItems) { item ->
                 val isSelected = selectedItemIndex == item.id
 
@@ -105,11 +122,8 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
                 )
 
-
-                val state = rememberLazyListState()
-                val stateScrolling = state.isScrollInProgress
-
-                CalendarItem(month = item.month,
+                CalendarItem(
+                    month = item.month,
                     day = item.dayNumber,
                     dayText = item.day,
                     colorChanging = backgroundColor,
@@ -119,33 +133,34 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                         .padding(5.dp)
                         .clip(RoundedCornerShape(5.dp))
                         .background(backgroundColor)
-                        .pointerInteropFilter {
-                            if (!stateScrolling) {
-                                when (it.action) {
-                                    MotionEvent.ACTION_DOWN -> {
-
-                                    }
-
-                                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                                        if (isSelected) {
-                                            Log.d("press", "firstpress")
-                                            selectedItemIndex = null
-                                            viewModel.pressedState = 0
-                                        } else {
-                                            Log.d("press", "second")
-                                            viewModel.recomposeCalendar++
-                                            selectedItemIndex = item.id
-                                            viewModel.pressedState = 0
-                                            viewModel.pressedState = item.id
-                                            viewModel.updateDate(item.id)
-                                            viewModel.updateDayId(item.id)
-                                            viewModel.dayId = item.id
+                        .then(
+                            if (!isScrolling.value) {
+                                Modifier.pointerInteropFilter {
+                                    when (it.action) {
+                                        MotionEvent.ACTION_UP -> {
+                                            if (isSelected) {
+                                                Log.d("press", "firstpress")
+                                                selectedItemIndex = null
+                                                viewModel.pressedState = 0
+                                            } else {
+                                                Log.d("press", "second")
+                                                viewModel.recomposeCalendar++
+                                                selectedItemIndex = item.id
+                                                viewModel.pressedState = item.id
+                                                viewModel.updateDate(item.id)
+                                                viewModel.updateDayId(item.id)
+                                                viewModel.dayId = item.id
+                                            }
                                         }
                                     }
+
+                                    true
                                 }
+                            } else {
+                                Modifier
                             }
-                            true
-                        })
+                        )
+                )
             }
         }
     }

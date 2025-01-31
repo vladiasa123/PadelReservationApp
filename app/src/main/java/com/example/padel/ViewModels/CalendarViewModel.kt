@@ -1,6 +1,9 @@
 package com.example.padel.ViewModels
 
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,9 +13,10 @@ import com.example.padel.data.calendarItems
 import com.example.padel.data.hourItems
 import com.example.padel.data.twoHourItems
 
+
 class CalendarViewModel : ViewModel() {
 
-    var hourInterval by mutableStateOf("")
+
 
     var reservedHour by mutableStateOf(false)
 
