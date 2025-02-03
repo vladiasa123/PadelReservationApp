@@ -27,8 +27,9 @@ import com.example.padel.composables.Login.LoginPage
 import com.example.padel.composables.Profile.ProfileScreen
 import com.example.padel.composables.register.RegisterPage
 import com.example.padel.composables.reservationCard.ReservationsScreen
+import com.example.padel.composables.reservationCard.UserReservations
 
-@SuppressLint("SuspiciousIndentation")
+@SuppressLint("SuspiciousIndentation", "UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
@@ -99,7 +100,7 @@ fun App() {
                     ProfileScreen(navController = navController)
                 }
                 composable("screenD") {
-                    ReservationsScreen()
+                    UserReservations()
                 }
                 composable("screenE") {
                     val registerViewModel: RegisterLoginViewModel = viewModel()

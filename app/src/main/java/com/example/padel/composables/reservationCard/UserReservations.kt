@@ -87,7 +87,7 @@ fun UserReservations(
                 RetrofitClient.apiService.getUsersReservations(reservationRequest)
             if (response.isSuccessful) {
                 val reservationResponse = response.body()
-                val userReservations = reservationResponse?.userReservations
+                val userReservations = reservationResponse?.userSlots
                 Log.d("v", userReservations.toString())
                 if (userReservations != null) {
                     hourIntervals = userReservations.toMutableList()
