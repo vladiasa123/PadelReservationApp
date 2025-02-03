@@ -16,7 +16,7 @@ import com.example.padel.data.BottomBarIcons
 @Composable
 fun SideNavigation(modifier: Modifier) {
     val items = listOf(
-        BottomBarIcons.Home, BottomBarIcons.Booking, BottomBarIcons.MyReservations, BottomBarIcons.Profile,
+        BottomBarIcons.Home, BottomBarIcons.Booking, BottomBarIcons.MyReservations,
     )
 
     NavigationRail {

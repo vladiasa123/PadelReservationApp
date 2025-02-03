@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
@@ -76,7 +77,7 @@ fun HomeScreen() {
                 animationSpec = tween(durationMillis = 500)
             )
         ) {
-            UpwardPopUpCard()
+            UpwardPopUpCard(modifier = Modifier.zIndex(2f))
         }
     }
 }

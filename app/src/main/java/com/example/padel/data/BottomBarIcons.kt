@@ -12,7 +12,6 @@ sealed class BottomBarIcons(
 ) {
 
     object Home : BottomBarIcons("Home", Icons.Filled.Home, "screenB")
-    object Profile : BottomBarIcons("Profile", Icons.Filled.AccountCircle, "screenC")
     object Booking : BottomBarIcons("Booking", Icons.Filled.DateRange, "screenB")
     object MyReservations : BottomBarIcons("Reservations", Icons.Filled.List, "screenD")
 }

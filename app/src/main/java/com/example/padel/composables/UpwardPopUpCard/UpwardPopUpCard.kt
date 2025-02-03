@@ -55,7 +55,6 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpwardPopUpCard(modifier: Modifier = Modifier) {
-    var viewModel: ProfileViewModel = viewModel()
     var calendarViewModel: CalendarViewModel = viewModel()
     val qrViewModel: QRViewModel = viewModel()
     val scope = rememberCoroutineScope()

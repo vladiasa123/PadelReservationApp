@@ -47,7 +47,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -106,6 +108,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                    val savedToken =  getTokenFromPreferences(context)
                     Log.d("Saved Token", "Saved token: $savedToken")
                     showToast(context, "Login successful, token saved")
+                    registerLoginViewModel.topAppBar.value = true;
                     navController.navigate("ScreenB")
                 } ?: run {
                     showToast(context, "Login failed: Invalid response body")
@@ -190,13 +193,15 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
                         TextFieldWithIcons(modifier = Modifier,
-                            "Email or Username",
-                            Icons.Filled.Email,
+                            isPasswordField = false,
+                            placeHolder = "Email or Username",
+                            Icon = Icons.Filled.Email,
                             value = registerLoginViewModel.email.value,
-                            onValueChange = { registerLoginViewModel.email.value = it })
+                            onValueChange = { registerLoginViewModel.email.value = it})
                         TextFieldWithIcons(modifier = Modifier,
-                            "Password",
-                            Icons.Filled.Lock,
+                            isPasswordField = true,
+                            placeHolder = "Password",
+                            Icon = Icons.Filled.Lock,
                             value = registerLoginViewModel.password.value,
                             onValueChange = { registerLoginViewModel.password.value = it })
                         Text("Don't have an account?",
@@ -227,7 +232,8 @@ fun TextFieldWithIcons(
     placeHolder: String,
     Icon: ImageVector,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    isPasswordField: Boolean = false
 ) {
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var unfocusedColor = MaterialTheme.colorScheme.primary
@@ -249,6 +255,7 @@ fun TextFieldWithIcons(
         },
         label = { Text(text = placeHolder) },
         placeholder = { Text(text = "Enter your e-mail") },
+        visualTransformation = if (isPasswordField) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
 
