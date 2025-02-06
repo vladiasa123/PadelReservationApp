@@ -12,14 +12,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Color, textColor: Color ) {
+fun CalendarItem(modifier: Modifier = Modifier, month: String, day: String, dayText: String, colorChanging: Brush, textColor: Color ) {
     val color = remember { mutableStateOf(colorChanging) }
     Column(
         modifier = modifier

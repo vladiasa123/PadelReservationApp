@@ -13,7 +13,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -42,20 +42,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.padel.ViewModels.CalendarViewModel
-import com.example.padel.ViewModels.ProfileViewModel
-import com.example.padel.ViewModels.QRViewModel
 import com.example.padel.composables.Home.HourSelectionGrid
 import com.example.padel.composables.Home.PadelDatesLazy
 import java.io.File
@@ -64,7 +60,7 @@ import java.io.File
 @Composable
 fun HomeScreen() {
     val viewModel: CalendarViewModel = viewModel()
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(top = 30.dp)) {
         SideNav()
         AnimatedVisibility(
             visible = viewModel.buttonPressedState,
@@ -92,9 +88,11 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
         initialOffsetY = { with(density) { 100.dp.roundToPx() } }
     ) + expandVertically(expandFrom = Alignment.Bottom) + fadeIn(initialAlpha = 0.3f)
 
-    Box(modifier = Modifier.then(
-        if (viewModel.buttonPressedState) Modifier.blur(10.dp) else Modifier
-    )) {
+    Box(
+        modifier = Modifier.then(
+            if (viewModel.buttonPressedState) Modifier.blur(10.dp) else Modifier
+        )
+    ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -106,7 +104,8 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
                 Text(
                     "Choose a date",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
+                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp),
+                    color = Color(0xFFFFFFFF)
                 )
                 PadelDatesLazy(
                     modifier = Modifier, viewModel = viewModel
@@ -114,7 +113,8 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
                 Text(
                     "Choose a hour",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp)
+                    modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 20.dp),
+                    color = Color(0xFFFFFFFF)
                 )
                 AnimatedVisibility(
                     visible = viewModel.pressedState > 0,
@@ -123,25 +123,25 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
                 ) {
                     Column {
                         Row {
-                            Button(
+                            ElevatedButton(
                                 modifier = Modifier.padding(start = 10.dp),
                                 onClick = { viewModel.selectedHours = false },
-                                border = BorderStroke(
-                                    2.dp,
-                                    MaterialTheme.colorScheme.inverseOnSurface
-                                ),
-                                shape = RoundedCornerShape(20)
+                                shape = RoundedCornerShape(20),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color(0xFFFFFFFF),
+                                    containerColor = Color(0xFF262e3a)
+                                )
                             ) {
                                 Text("1 hour")
                             }
-                            Button(
+                            ElevatedButton(
                                 onClick = { viewModel.selectedHours = true },
-                                border = BorderStroke(
-                                    2.dp,
-                                    MaterialTheme.colorScheme.inverseOnSurface
-                                ),
                                 shape = RoundedCornerShape(20),
-                                modifier = Modifier.padding(start = 10.dp)
+                                modifier = Modifier.padding(start = 10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = Color(0xFFFFFFFF),
+                                    containerColor = Color(0xFF262e3a)
+                                )
                             ) {
                                 Text("2 hours")
                             }

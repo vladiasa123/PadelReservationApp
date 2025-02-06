@@ -2,7 +2,6 @@ package com.example.padel.composables.Home
 
 import android.util.Log
 import android.view.MotionEvent
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -17,8 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +28,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
@@ -45,25 +44,24 @@ import com.example.padel.data.twoHourItems
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HourSelection(
-    modifier: Modifier = Modifier, hour: String, colorChanging: Color, textColor: Color
+    modifier: Modifier = Modifier, hour: String, colorChanging: Brush, textColor: Color
 ) {
     Box(
         modifier = Modifier
             .width(5.dp)
             .height(55.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(colorChanging), contentAlignment = Alignment.Center
-
-
     ) {
-            Text(
-                hour,
-                modifier = modifier.padding(top = 2.dp, bottom = 2.dp),
-                textAlign = TextAlign.Center,
-                color = textColor
-            )
+        Text(
+            hour,
+            modifier = modifier.padding(top = 2.dp, bottom = 2.dp),
+            textAlign = TextAlign.Center,
+            color = textColor
+        )
     }
 }
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -79,8 +77,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     }
 
     fun deactivateItem(hour: List<String>) {
-        deactivatedItems =
-            (deactivatedItems + viewModel.unavailableSlots) as MutableSet<String?>
+        deactivatedItems = (deactivatedItems + viewModel.unavailableSlots) as MutableSet<String?>
     }
 
 
@@ -103,32 +100,31 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
         columns = GridCells.Adaptive(minSize = 100.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
+
         modifier = if (screenWidthDp > 600) {
             Modifier.padding(100.dp)
         } else {
-            Modifier.padding(15.dp).border(2.dp, MaterialTheme.colorScheme.inverseOnSurface).padding(15.dp)
+            Modifier
+                .padding(15.dp)
+                .border(2.dp, Color(0xFF262e3a), RoundedCornerShape(10.dp))
+                .padding(15.dp)
         }
     ) {
         items(if (viewModel.selectedHours) twoHourItems else hourItems) { hourItems ->
-            var initialColor = MaterialTheme.colorScheme.onTertiary
-            val secondaryColor = MaterialTheme.colorScheme.secondary
+            val initialColor = Color(0xFF262e3a)
             var isSelected = selectedItemIndex == hourItems.id
             var isDeactivated = hourItems.timeRange in deactivatedItems
 
-            val backgroundColor by animateColorAsState(
-                targetValue = when {
-                    isDeactivated -> Color(0xFFF5F5F5)
-                    isSelected -> secondaryColor
-                    else -> initialColor
-                }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
-            )
+            val backgroundBrush = when {
+                isSelected -> Brush.linearGradient(
+                    colors = listOf(Color(0xFF924974), Color(0xFFe38378))
+                )
 
-            val textColor by animateColorAsState(
-                targetValue = when {
-                    isSelected -> Color.White
-                    else -> Color.Black
-                }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
-            )
+                else -> SolidColor(initialColor)
+                
+            }
+
+            val textColor = Color.White
 
 
             LaunchedEffect(viewModel.recomposeCalendar) {
@@ -143,7 +139,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
             val state = rememberLazyListState()
             val stateScrolling = state.isScrollInProgress
             HourSelection(hour = hourItems.timeRange,
-                colorChanging = backgroundColor,
+                colorChanging = backgroundBrush,
                 textColor = textColor,
                 modifier = Modifier
                     .scale(scale)
@@ -166,9 +162,6 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                                 }
 
                                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                                    if (!isSelected && backgroundColor == initialColor) {
-                                        sizeAnimation = false
-                                    }
                                 }
                             }
                         }

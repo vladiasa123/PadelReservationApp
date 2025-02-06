@@ -28,6 +28,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,8 +46,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -64,7 +69,10 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 @Composable
-fun LoginPage(navController: NavHostController, registerLoginViewModel: RegisterLoginViewModel) {
+fun LoginPage(
+    navController: NavHostController,
+    registerLoginViewModel: RegisterLoginViewModel,
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val jwtTokenViewModel: JwtTokenViewModel = viewModel()
@@ -105,10 +113,10 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                     val extractedToken = it.token
                     saveTokenToPreferences(extractedToken)
                     jwtTokenViewModel.decodeToken(extractedToken)
-                   val savedToken =  getTokenFromPreferences(context)
+                    val savedToken = getTokenFromPreferences(context)
                     Log.d("Saved Token", "Saved token: $savedToken")
                     showToast(context, "Login successful, token saved")
-                    registerLoginViewModel.topAppBar.value = true;
+                    registerLoginViewModel.topAppBar.value = true
                     navController.navigate("ScreenB")
                 } ?: run {
                     showToast(context, "Login failed: Invalid response body")
@@ -128,7 +136,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
 
 
 
-    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+    Box(modifier = Modifier.background(Color(0xFF212932))) {
         var visible by remember { mutableStateOf(false) }
         LaunchedEffect(Unit) {
             visible = true
@@ -144,20 +152,22 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
             } + fadeOut()) {
             Column {
                 Text(
-                    "Welcome",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.background
+                    text = "Welcome", style = TextStyle(
+                        fontSize = 50.sp,
+                        fontWeight = FontWeight.Bold,
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF924974), Color(0xFFe38378))
+                        )
+                    ), modifier = Modifier.padding(start = 10.dp, top = 20.dp)
                 )
                 Text(
-                    "Back",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.padding(start = 10.dp, top = 10.dp),
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.background
+                    text = "Back", style = TextStyle(
+                        fontSize = 50.sp,
+                        fontWeight = FontWeight.Bold,
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF924974), Color(0xFFe38378))
+                        )
+                    ), modifier = Modifier.padding(start = 10.dp, top = 20.dp)
                 )
             }
 
@@ -183,7 +193,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                         .height(550.dp)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color(0xFF262e3a))
                 ) {
                     Column(
                         modifier = Modifier
@@ -197,7 +207,7 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                             placeHolder = "Email or Username",
                             Icon = Icons.Filled.Email,
                             value = registerLoginViewModel.email.value,
-                            onValueChange = { registerLoginViewModel.email.value = it})
+                            onValueChange = { registerLoginViewModel.email.value = it })
                         TextFieldWithIcons(modifier = Modifier,
                             isPasswordField = true,
                             placeHolder = "Password",
@@ -207,16 +217,24 @@ fun LoginPage(navController: NavHostController, registerLoginViewModel: Register
                         Text("Don't have an account?",
                             modifier = Modifier
                                 .padding(start = 160.dp)
-                                .clickable { navController.navigate("ScreenE") })
-                        Button(
-                            onClick = { handleLogin() },
+                                .clickable { navController.navigate("ScreenE") }, color = Color.White)
+                        Box(
                             modifier = Modifier
                                 .padding(top = 100.dp)
                                 .width(270.dp)
-                                .height(40.dp),
-                            shape = RoundedCornerShape(5.dp)
+                                .height(40.dp)
+                                .background(Brush.linearGradient(colors = listOf(Color(0xFF924974), Color(0xFFe38378))), shape = RoundedCornerShape(5.dp))
                         ) {
-                            Text("Sign up")
+                            Button(
+                                onClick = { handleLogin() },
+                                modifier = Modifier.fillMaxSize(),
+                                shape = RoundedCornerShape(5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent
+                                )
+                            ) {
+                                Text("Login", color = Color.White)
+                            }
                         }
                     }
                 }
@@ -235,26 +253,27 @@ fun TextFieldWithIcons(
     onValueChange: (String) -> Unit,
     isPasswordField: Boolean = false
 ) {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
-    var unfocusedColor = MaterialTheme.colorScheme.primary
-    var focusedColor = MaterialTheme.colorScheme.tertiary
+    var textColor = Color(0xFFFFFFFF)
+    var focusedColor = Color(0xFF924974)
+
     return OutlinedTextField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = unfocusedColor,
-            unfocusedLeadingIconColor = unfocusedColor,
-            unfocusedSupportingTextColor = unfocusedColor,
+            unfocusedBorderColor = textColor,
+            unfocusedLeadingIconColor = textColor,
+            unfocusedSupportingTextColor = textColor,
             focusedBorderColor = focusedColor,
             focusedLeadingIconColor = focusedColor,
             focusedSupportingTextColor = focusedColor,
-            focusedLabelColor = focusedColor
+            focusedLabelColor = focusedColor,
+            containerColor = Color(0xFF3f4c60)
         ),
         value = value,
         leadingIcon = { Icon(imageVector = Icon, contentDescription = "emailIcon") },
         onValueChange = {
             onValueChange(it)
         },
-        label = { Text(text = placeHolder) },
-        placeholder = { Text(text = "Enter your e-mail") },
+        label = { Text(text = placeHolder,  color =textColor) },
+        placeholder = { Text(text = "Enter your e-mail", color =textColor )  },
         visualTransformation = if (isPasswordField) PasswordVisualTransformation() else VisualTransformation.None
     )
 }

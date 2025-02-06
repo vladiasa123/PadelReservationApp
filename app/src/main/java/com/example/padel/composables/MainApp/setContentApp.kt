@@ -5,17 +5,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -23,16 +13,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.ViewModels.RegisterLoginViewModel
-import com.example.padel.composables.Home.BottomNavigation
+import com.example.padel.composables.Home.BottomBar
+import com.example.padel.composables.Home.TopBarWithDynamicTitle
 import com.example.padel.composables.Login.LoginPage
 import com.example.padel.composables.Profile.ProfileScreen
 import com.example.padel.composables.register.RegisterPage
@@ -42,11 +30,12 @@ import com.example.padel.composables.reservationCard.UserReservations
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
+    var profileViewModel: ProfileViewModel = viewModel();
     val navController = rememberNavController()
     val SCREEN_TRANSITION_MILLIS = 700
     var screenWithoutBottomBar by mutableStateOf(false)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val registerLoginViewModel = RegisterLoginViewModel();
+    val registerLoginViewModel = RegisterLoginViewModel()
 
     val currentBackStackEntry by navController.currentBackStackEntryFlow.collectAsState(initial = null)
     val currentRoute = currentBackStackEntry?.destination?.route
@@ -58,84 +47,63 @@ fun App() {
     if (currentRoute == "screenA") {
         screenWithoutBottomBar = true
     }
+    if (currentRoute == "screenD") {
+        profileViewModel.circleAnimate.value = true;
+    }
+    if(currentRoute == "screenB"){
+        profileViewModel.circleAnimate.value = false;
+    }
 
 
 
 
-    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
-        if (!screenWithoutBottomBar) {
-            SmallTopAppBar(colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                titleContentColor = MaterialTheme.colorScheme.primary,
-            ), title = {
-                Text(text = "Padel", textAlign = TextAlign.Center)
-            }, navigationIcon = {
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Localized description"
-                    )
-                }
-            }, actions = {
-                IconButton(onClick = { navController.navigate("screenC") }) {
-                    Icon(
-                        imageVector = Icons.Filled.AccountCircle,
-                        contentDescription = "Localized description"
-                    )
-                }
-            }, scrollBehavior = scrollBehavior
+    Box() {
+        NavHost(navController = navController, startDestination = "screenA", enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start,
+                tween(SCREEN_TRANSITION_MILLIS)
             )
-        }
-
-    }, bottomBar = {
-        if (!screenWithoutBottomBar) {
-            BottomNavigation(navController = navController, modifier = Modifier.zIndex(1f))
-        }
-    }) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            NavHost(navController = navController, startDestination = "screenA", enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start,
-                    tween(SCREEN_TRANSITION_MILLIS)
+        }, exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start,
+                tween(SCREEN_TRANSITION_MILLIS)
+            )
+        }, popEnterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.End,
+                tween(SCREEN_TRANSITION_MILLIS)
+            )
+        }, popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.End,
+                tween(SCREEN_TRANSITION_MILLIS)
+            )
+        }) {
+            composable("screenA") {
+                LoginPage(
+                    navController = navController,
+                    registerLoginViewModel = RegisterLoginViewModel()
                 )
-            }, exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start,
-                    tween(SCREEN_TRANSITION_MILLIS)
+            }
+            composable("screenB") {
+                HomeScreen()
+            }
+            composable("screenC") {
+                ProfileScreen(navController = navController)
+            }
+            composable("screenD") {
+                UserReservations()
+            }
+            composable("screenE") {
+                val registerViewModel: RegisterLoginViewModel = viewModel()
+                RegisterPage(
+                    navController = navController, registerLoginViewModel = registerViewModel
                 )
-            }, popEnterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End,
-                    tween(SCREEN_TRANSITION_MILLIS)
-                )
-            }, popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End,
-                    tween(SCREEN_TRANSITION_MILLIS)
-                )
-            }) {
-                composable("screenA") {
-                    LoginPage(
-                        navController = navController,
-                        registerLoginViewModel = RegisterLoginViewModel()
-                    )
-                }
-                composable("screenB") {
-                    HomeScreen()
-                }
-                composable("screenC") {
-                    ProfileScreen(navController = navController)
-                }
-                composable("screenD") {
-                    UserReservations()
-                }
-                composable("screenE") {
-                    val registerViewModel: RegisterLoginViewModel = viewModel()
-                    RegisterPage(
-                        navController = navController, registerLoginViewModel = registerViewModel
-                    )
-                }
             }
         }
+    }
+    if (!screenWithoutBottomBar) {
+        TopBarWithDynamicTitle()
+        BottomBar(navController = navController)
     }
 }

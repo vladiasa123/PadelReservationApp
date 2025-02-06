@@ -9,5 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     var animatedState: MutableState<Boolean> = mutableStateOf(false)
 
+    var circleAnimate:  MutableState<Boolean> = mutableStateOf(false)
+
     var tappedOutside: MutableState<Boolean> = mutableStateOf(false)
 }

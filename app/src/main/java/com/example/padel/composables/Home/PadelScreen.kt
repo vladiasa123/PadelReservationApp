@@ -27,6 +27,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInteropFilter
@@ -44,8 +45,7 @@ import retrofit2.Response
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) {
-    val initialColor = MaterialTheme.colorScheme.onTertiary
-    val secondaryColor = MaterialTheme.colorScheme.secondary
+    val initialColor = Color(0xFF262e3a)
     var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
     val state = rememberLazyListState()
 
@@ -90,8 +90,8 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
             .padding(start = 10.dp, end = 10.dp)
             .border(
                 2.dp,
-                SolidColor(MaterialTheme.colorScheme.inverseOnSurface),
-                shape = RoundedCornerShape(2.dp)
+                SolidColor(Color(0xFF262e3a)),
+                shape = RoundedCornerShape(10.dp)
             ),
     ) {
 
@@ -103,19 +103,14 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
             items(calendarItems) { item ->
                 val isSelected = selectedItemIndex == item.id
 
-                val backgroundColor by animateColorAsState(
-                    targetValue = when {
-                        isSelected -> secondaryColor
-                        else -> initialColor
-                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
-                )
+                val backgroundBrush = when {
+                    isSelected -> Brush.linearGradient(
+                        colors = listOf(Color(0xFF924974), Color(0xFFe38378))
+                    )
+                    else -> SolidColor(initialColor) 
+                }
 
-                val textColor by animateColorAsState(
-                    targetValue = when {
-                        isSelected -> Color.White
-                        else -> Color.Black
-                    }, animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
-                )
+                val textColor = Color.White
 
                 val scale by animateFloatAsState(
                     targetValue = if (isSelected) 0.9f else 1f,
@@ -126,13 +121,13 @@ fun PadelDatesLazy(modifier: Modifier = Modifier, viewModel: CalendarViewModel) 
                     month = item.month,
                     day = item.dayNumber,
                     dayText = item.day,
-                    colorChanging = backgroundColor,
+                    colorChanging = backgroundBrush,
                     textColor = textColor,
                     modifier = Modifier
                         .scale(scale)
                         .padding(5.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .background(backgroundColor)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(backgroundBrush)
                         .then(
                             if (!isScrolling.value) {
                                 Modifier.pointerInteropFilter {
