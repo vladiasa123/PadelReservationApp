@@ -5,7 +5,9 @@ import UpwardPopUpCard
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -59,22 +61,19 @@ import java.io.File
 
 @Composable
 fun HomeScreen() {
-    val viewModel: CalendarViewModel = viewModel()
-    Box(modifier = Modifier.fillMaxSize().padding(top = 30.dp)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 30.dp)) {
         SideNav()
-        AnimatedVisibility(
-            visible = viewModel.buttonPressedState,
-            enter = slideInVertically(
-                initialOffsetY = { it },
-                animationSpec = tween(durationMillis = 500)
-            ),
-            exit = slideOutVertically(
-                targetOffsetY = { it },
-                animationSpec = tween(durationMillis = 500)
-            )
-        ) {
-            UpwardPopUpCard(modifier = Modifier.zIndex(2f))
-        }
+        val viewModel: CalendarViewModel = viewModel()
+        val size by animateDpAsState(
+            targetValue = if (viewModel.buttonPressedState) 400.dp else 0.dp,
+            animationSpec = spring(
+                dampingRatio = 0.8f,
+                stiffness = 300f
+            ), label = ""
+        )
+        UpwardPopUpCard(modifier = Modifier.zIndex(2f), size)
     }
 }
 
@@ -83,10 +82,12 @@ fun HomeScreen() {
 fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
     val viewModel: CalendarViewModel = viewModel()
     val density = LocalDensity.current
-
-    val animationForVisibility = slideInVertically(
-        initialOffsetY = { with(density) { 100.dp.roundToPx() } }
-    ) + expandVertically(expandFrom = Alignment.Bottom) + fadeIn(initialAlpha = 0.3f)
+    val animationForVisibility =
+        slideInVertically(initialOffsetY = { with(density) { 100.dp.roundToPx() } }) + expandVertically(
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(
+            initialAlpha = 0.3f
+        )
 
     Box(
         modifier = Modifier.then(
@@ -178,16 +179,13 @@ fun ImageQr(modifier: Modifier = Modifier) {
     ) {
         androidx.compose.animation.AnimatedVisibility(visible = isFullScreen) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                IconToggleButton(
-                    modifier = Modifier.align(Alignment.TopEnd),
+                IconToggleButton(modifier = Modifier.align(Alignment.TopEnd),
                     checked = isFullScreen,
                     onCheckedChange = {
                         isFullScreen = false
-                    }
-                ) {
+                    }) {
                     Icon(
-                        Icons.Filled.Close,
-                        contentDescription = null
+                        Icons.Filled.Close, contentDescription = null
                     )
                 }
             }

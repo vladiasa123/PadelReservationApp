@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class BottomBarIcons(
     var title: String, var icon: ImageVector, var route: String
 ) {
-    object Home : BottomBarIcons("Home", Icons.Filled.Home, "screenB")
-    object Booking : BottomBarIcons("Booking", Icons.Filled.DateRange, "screenB")
-    object MyReservations : BottomBarIcons("Reservations", Icons.Filled.List, "screenD")
+    object Home : BottomBarIcons("Home", Icons.Filled.Home, "Home")
+    object Booking : BottomBarIcons("Booking", Icons.Filled.DateRange, "Home")
+    object MyReservations : BottomBarIcons("Reservations", Icons.Filled.List, "Reservations")
 }

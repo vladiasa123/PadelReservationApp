@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
 
             val animateBlur by animateDpAsState(
-                targetValue = if(profileViewModel.circleAnimate.value) 50.dp else 200.dp,
+                targetValue = if(profileViewModel.circleAnimate.value) 100.dp else 200.dp,
                 animationSpec = spring(dampingRatio = 0.5f, stiffness = 50f), label = ""
             )
 

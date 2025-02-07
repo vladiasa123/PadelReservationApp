@@ -119,9 +119,10 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                 isSelected -> Brush.linearGradient(
                     colors = listOf(Color(0xFF924974), Color(0xFFe38378))
                 )
-
+                isDeactivated -> SolidColor(Color(0xFF3A4454))
                 else -> SolidColor(initialColor)
-                
+
+
             }
 
             val textColor = Color.White
@@ -133,7 +134,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
 
             val scale by animateFloatAsState(
                 targetValue = if (isSelected) 0.9f else 1f,
-                animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+                animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f), label = ""
             )
 
             val state = rememberLazyListState()
@@ -152,11 +153,13 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                                     }
                                     if (isSelected) {
                                         selectedItemIndex = null
+                                        viewModel.updatePressedState(null)
                                     } else {
                                         selectedItemIndex = hourItems.id
                                         sizeAnimation = true
                                         viewModel.pressedState = hourItems.id
                                         viewModel.buttonPressedState = true
+                                        viewModel.animations = true
                                         viewModel.updateHour(hourItems.id)
                                     }
                                 }

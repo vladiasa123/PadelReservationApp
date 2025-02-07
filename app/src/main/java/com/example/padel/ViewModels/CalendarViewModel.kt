@@ -28,8 +28,7 @@ class CalendarViewModel : ViewModel() {
         private set
 
 
-    var isSelected by mutableStateOf<Boolean>(false)
-
+    var isSelected by mutableStateOf(false)
 
     fun addUnavailableSlot(slot: List<String>) {
         unavailableSlots = slot
@@ -77,9 +76,19 @@ class CalendarViewModel : ViewModel() {
 
 
     var buttonPressedState by mutableStateOf(false)
+
     var pressedState by mutableStateOf(0)
-    fun pressedState(state: Int) {
-        pressedState = state
+
+
+    fun updatePressedState(state: Int?) {
+        pressedState = state ?: 0
+        buttonPressedState = state != null
     }
+
+    var animations by mutableStateOf(false)
+
+
+
 }
+
 

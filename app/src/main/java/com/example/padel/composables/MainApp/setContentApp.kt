@@ -1,22 +1,35 @@
 package com.example.padel.composables.MainApp
 
+import UpwardPopUpCard
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.padel.ViewModels.CalendarViewModel
 import com.example.padel.ViewModels.ProfileViewModel
 import com.example.padel.ViewModels.RegisterLoginViewModel
 import com.example.padel.composables.Home.BottomBar
@@ -30,15 +43,16 @@ import com.example.padel.composables.reservationCard.UserReservations
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
-    var profileViewModel: ProfileViewModel = viewModel();
+    var profileViewModel: ProfileViewModel = viewModel()
     val navController = rememberNavController()
     val SCREEN_TRANSITION_MILLIS = 700
     var screenWithoutBottomBar by mutableStateOf(false)
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val registerLoginViewModel = RegisterLoginViewModel()
+    val viewModel: CalendarViewModel = viewModel()
 
     val currentBackStackEntry by navController.currentBackStackEntryFlow.collectAsState(initial = null)
     val currentRoute = currentBackStackEntry?.destination?.route
+
+
 
 
     if (currentRoute != null) {
@@ -47,14 +61,12 @@ fun App() {
     if (currentRoute == "screenA") {
         screenWithoutBottomBar = true
     }
-    if (currentRoute == "screenD") {
-        profileViewModel.circleAnimate.value = true;
+    if (currentRoute == "Reservations") {
+        profileViewModel.circleAnimate.value = true
     }
-    if(currentRoute == "screenB"){
-        profileViewModel.circleAnimate.value = false;
+    if (currentRoute == "Home") {
+        profileViewModel.circleAnimate.value = false
     }
-
-
 
 
     Box() {
@@ -85,13 +97,13 @@ fun App() {
                     registerLoginViewModel = RegisterLoginViewModel()
                 )
             }
-            composable("screenB") {
+            composable("Home") {
                 HomeScreen()
             }
             composable("screenC") {
                 ProfileScreen(navController = navController)
             }
-            composable("screenD") {
+            composable("Reservations") {
                 UserReservations()
             }
             composable("screenE") {
@@ -101,9 +113,16 @@ fun App() {
                 )
             }
         }
-    }
-    if (!screenWithoutBottomBar) {
-        TopBarWithDynamicTitle()
-        BottomBar(navController = navController)
+
+        if (!screenWithoutBottomBar) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .zIndex(1f)
+            ) {
+                TopBarWithDynamicTitle(selectedTab = currentRoute ?: "Home")
+                BottomBar(navController = navController)
+            }
+        }
     }
 }
