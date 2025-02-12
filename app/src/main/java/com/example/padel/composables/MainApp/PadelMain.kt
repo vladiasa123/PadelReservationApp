@@ -3,6 +3,7 @@ package com.example.padel.composables.MainApp
 
 import UpwardPopUpCard
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -17,6 +18,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,17 +64,19 @@ import java.io.File
 
 @Composable
 fun HomeScreen() {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(top = 30.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 30.dp)
+    ) {
         SideNav()
         val viewModel: CalendarViewModel = viewModel()
         val size by animateDpAsState(
             targetValue = if (viewModel.buttonPressedState) 400.dp else 0.dp,
             animationSpec = spring(
-                dampingRatio = 0.8f,
-                stiffness = 300f
-            ), label = ""
+                dampingRatio = 0.8f, stiffness = 300f
+            ),
+            label = ""
         )
         UpwardPopUpCard(modifier = Modifier.zIndex(2f), size)
     }
@@ -80,6 +85,9 @@ fun HomeScreen() {
 
 @Composable
 fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
+    BackHandler(enabled = true) {
+        // Prevent back press action
+    }
     val viewModel: CalendarViewModel = viewModel()
     val density = LocalDensity.current
     val animationForVisibility =
@@ -89,11 +97,13 @@ fun SideNav(paddingValues: PaddingValues = PaddingValues()) {
             initialAlpha = 0.3f
         )
 
-    Box(
-        modifier = Modifier.then(
-            if (viewModel.buttonPressedState) Modifier.blur(10.dp) else Modifier
-        )
-    ) {
+    Box(modifier = Modifier.then(
+        if (viewModel.buttonPressedState) Modifier.blur(10.dp) else Modifier
+    ).pointerInput(Unit) {
+            detectTransformGestures { _, _, _, _ ->
+
+            }
+        }) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier

@@ -52,6 +52,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -142,12 +143,16 @@ fun LoginPage(
         label = ""
     )
 
+
     val animatedY by animateFloatAsState(
         targetValue = if (profileViewModel.circleAnimate.value) 0.3f else 0.4f,
         animationSpec = spring(dampingRatio = 0.5f, stiffness = 50f),
         label = ""
     )
     val circlePosition = Offset(animatedX, animatedY)
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val targetHeight = screenHeight * 0.6f
 
 
     Box(modifier = Modifier.background(Color(0xFF212932))) {
@@ -171,11 +176,11 @@ fun LoginPage(
                     brush = Brush.linearGradient(
                         colors = listOf(Color(0xFF924974), Color(0xFFe38378))
                     ), size = Size(
-                        width = size.width * 2, // Adjust this for the width
-                        height = 300f // Height stays the same
+                        width = size.width * 2,
+                        height = 300f
                     ), topLeft = Offset(
-                        x = size.width * circlePosition.x - 1000f, // Offset to center it
-                        y = size.height * circlePosition.y - 150f // Offset to center it
+                        x = size.width * circlePosition.x - 1000f,
+                        y = size.height * circlePosition.y - 150f
                     )
                 )
             }
@@ -233,7 +238,7 @@ fun LoginPage(
             ) {
                 Box(
                     modifier = Modifier
-                        .height(550.dp)
+                        .height(targetHeight)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
                         .background(Color(0xFF262e3a))
@@ -241,7 +246,7 @@ fun LoginPage(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 50.dp),
+                            .padding(top = 80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
@@ -265,7 +270,7 @@ fun LoginPage(
                         )
                         Box(
                             modifier = Modifier
-                                .padding(top = 100.dp)
+                                .padding(top = 10.dp)
                                 .width(270.dp)
                                 .height(40.dp)
                                 .background(

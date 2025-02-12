@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,7 +59,7 @@ import retrofit2.Response
 @Composable
 fun UpwardPopUpCard(
     modifier: Modifier = Modifier, size: Dp
-) {  var calendarViewModel: CalendarViewModel = viewModel()
+) { var calendarViewModel: CalendarViewModel = viewModel()
     val qrViewModel: QRViewModel = viewModel()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -90,7 +91,7 @@ fun UpwardPopUpCard(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         IconButton(onClick = {
-                             calendarViewModel.buttonPressedState = false
+                            calendarViewModel.buttonPressedState = false
                         }, modifier = Modifier.align(TopEnd)) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
@@ -100,12 +101,12 @@ fun UpwardPopUpCard(
                     }
                     Text(
                         "Court 1", color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .padding(top = 10.dp, bottom = 10.dp)
-                        .fillMaxWidth()
-                        .background(Color.Transparent),
-                    textAlign = TextAlign.Center
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .padding(top = 10.dp, bottom = 10.dp)
+                            .fillMaxWidth()
+                            .background(Color.Transparent),
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -142,8 +143,8 @@ fun UpwardPopUpCard(
                     Box(
                         modifier = Modifier.fillMaxSize(), contentAlignment = Center
                     ) {
-                        Text(
-                            "${calendarViewModel.selectedHour}",color = Color.White,
+                        Text("fasf"
+                            /* "${calendarViewModel.selectedHour}" */,color = Color.White,
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Light
                         )
@@ -202,7 +203,7 @@ fun UpwardPopUpCard(
                                 Log.d("context", "Reservation failed: ${response.message()}")
                             }
                         }
-                    } ,
+                    }  ,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
@@ -215,6 +216,7 @@ fun UpwardPopUpCard(
 
     }
 }
+
 
 @Preview
 @Composable

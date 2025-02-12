@@ -24,6 +24,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -44,21 +46,26 @@ val bottomBarIcons = listOf(
 )
 
 @Composable
-fun TopBar(title: String) {
+fun TopBar(title: String, navController: NavController) {
+    val currentBackStackEntry = navController.currentBackStackEntry
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = { /* TODO */ }) {
-            Icon(
+        IconButton(onClick = {
+            if (!navController.popBackStack() ) {
+                navController.navigate("Home")
+            }
+        }) {
+        Icon(
                 imageVector = Icons.Filled.KeyboardArrowLeft,
                 contentDescription = "go back",
                 tint = Color.White
             )
         }
         Text(title, fontSize = 25.sp, color = Color.White)
-        IconButton(onClick = { /* TODO */ }) {
+        IconButton(onClick = { navController.navigate("screenC") }) {
             Icon(
                 imageVector = Icons.Filled.AccountCircle,
                 contentDescription = "go back",
@@ -69,8 +76,8 @@ fun TopBar(title: String) {
 }
 
 @Composable
-fun TopBarWithDynamicTitle(selectedTab: String) {
-    TopBar(title = selectedTab)
+fun TopBarWithDynamicTitle(selectedTab: String, navController: NavController) {
+    TopBar(title = selectedTab, navController = navController)
 }
 
 @Composable

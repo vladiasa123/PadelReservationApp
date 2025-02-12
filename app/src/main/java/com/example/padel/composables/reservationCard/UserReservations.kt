@@ -2,12 +2,12 @@ package com.example.padel.composables.reservationCard
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,10 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RenderEffect
-import androidx.compose.ui.graphics.Shader
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,15 +47,11 @@ import com.example.padel.ViewModels.JwtTokenViewModel
 import com.example.padel.api.RetrofitClient
 import com.example.padel.data.ReservationResponse
 import com.example.padel.data.UsersReservation
+import com.example.padel.data.hourItems
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.File
 
-
-@Composable
-fun ReservationsScreen() {
-    UserReservations()
-}
 
 
 @Composable
@@ -67,6 +63,7 @@ fun UserReservations(
     val scope = rememberCoroutineScope()
     val jwtTokenViewModel: JwtTokenViewModel = viewModel()
     var hourIntervals by remember { mutableStateOf(mutableListOf<String>()) }
+
 
     val imageFolderPath = "/data/data/com.example.padel/files/"
     val imageFiles = File(imageFolderPath).listFiles { file ->
@@ -98,29 +95,37 @@ fun UserReservations(
 
 
     LazyRow(
-        state = lazyListState, flingBehavior = snapFlingBehavior, modifier = Modifier.fillMaxWidth()
+         state = lazyListState, flingBehavior = snapFlingBehavior, modifier = Modifier.fillMaxWidth()
     ) {
         items(combinedList) { (hour, imageFiles) ->
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxHeight()
                     .padding(top = 30.dp)
             ) {
                 Text(
-                    "January 15",
-                    fontSize = 70.sp,
-                    modifier = Modifier.fillParentMaxWidth(),
+                    text = "January 15",
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF924974), Color(0xFFe38378))
+                        ),
+                        fontSize = 70.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium
                 )
+
                 Text(
                     "2020",
-                    fontSize = 70.sp,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(end = 180.dp),
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF924974), Color(0xFFe38378))
+                        ),
+                        fontSize = 70.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleSmall
                 )
                 Text(
                     text = "$hour",
@@ -133,7 +138,6 @@ fun UserReservations(
                 ElevatedCard(
                     modifier = Modifier
                         .fillParentMaxWidth()
-                        .align(Alignment.CenterHorizontally)
                         .padding(start = 10.dp, end = 10.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF262e3a)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -152,7 +156,8 @@ fun UserReservations(
                     modifier = modifier
                         .fillParentMaxWidth()
                         .padding(top = 40.dp, end = 10.dp, start = 10.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF262e3a))
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -169,7 +174,7 @@ fun UserReservations(
                         Box(modifier = Modifier.fillParentMaxWidth()) {
                             ElevatedButton(
                                 colors = ButtonDefaults.elevatedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    containerColor = Color(0xFF262e3a),
                                     contentColor = MaterialTheme.colorScheme.primary
                                 ),
                                 onClick = { /*TODO*/ },
@@ -192,7 +197,7 @@ fun UserReservations(
                 ) {
                     ElevatedButton(
                         colors = ButtonDefaults.elevatedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            containerColor = Color(0xFF262e3a),
                             contentColor = MaterialTheme.colorScheme.primary
                         ),
                         onClick = { /*TODO*/ },
@@ -203,7 +208,7 @@ fun UserReservations(
                     }
                     ElevatedButton(
                         colors = ButtonDefaults.elevatedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            containerColor = Color(0xFF262e3a),
                             contentColor = MaterialTheme.colorScheme.primary
                         ), onClick = { /*TODO*/ }, shape = RoundedCornerShape(10.dp)
                     ) {
@@ -211,7 +216,7 @@ fun UserReservations(
                     }
                     ElevatedButton(
                         colors = ButtonDefaults.elevatedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            containerColor = Color(0xFF262e3a),
                             contentColor = MaterialTheme.colorScheme.primary
                         ),
                         modifier = Modifier.padding(end = 10.dp),

@@ -68,7 +68,6 @@ fun HourSelection(
 fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
-    var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
     var deactivatedItems by remember { mutableStateOf(setOf<String?>()) }
     var sizeAnimation by remember { mutableStateOf(false) }
 
@@ -88,7 +87,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
         } else {
             clearDeactivatedItems()
             deactivateItem(viewModel.unavailableSlots)
-            selectedItemIndex = null
+           viewModel.selectedItemIndex = null
         }
 
     }
@@ -112,7 +111,7 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
     ) {
         items(if (viewModel.selectedHours) twoHourItems else hourItems) { hourItems ->
             val initialColor = Color(0xFF262e3a)
-            var isSelected = selectedItemIndex == hourItems.id
+            var isSelected = viewModel.selectedItemIndex == hourItems.id
             var isDeactivated = hourItems.timeRange in deactivatedItems
 
             val backgroundBrush = when {
@@ -152,10 +151,10 @@ fun HourSelectionGrid(modifier: Modifier, viewModel: CalendarViewModel) {
                                         return@pointerInteropFilter false
                                     }
                                     if (isSelected) {
-                                        selectedItemIndex = null
+                                        viewModel.selectedItemIndex = null
                                         viewModel.updatePressedState(null)
                                     } else {
-                                        selectedItemIndex = hourItems.id
+                                        viewModel.selectedItemIndex = hourItems.id
                                         sizeAnimation = true
                                         viewModel.pressedState = hourItems.id
                                         viewModel.buttonPressedState = true

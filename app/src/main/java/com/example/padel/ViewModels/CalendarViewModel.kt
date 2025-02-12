@@ -1,12 +1,8 @@
 package com.example.padel.ViewModels
 
 import android.util.Log
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.padel.data.calendarItems
@@ -17,7 +13,7 @@ import com.example.padel.data.twoHourItems
 class CalendarViewModel : ViewModel() {
 
 
-
+    var selectedItemIndex by mutableStateOf<Int?>(null)
     var reservedHour by mutableStateOf(false)
 
 
@@ -37,9 +33,6 @@ class CalendarViewModel : ViewModel() {
     fun clearUnavailableSlot() {
         unavailableSlots = emptyList()
     }
-
-
-
 
 
     var selectedDay by mutableStateOf<String?>(null)
@@ -86,7 +79,6 @@ class CalendarViewModel : ViewModel() {
     }
 
     var animations by mutableStateOf(false)
-
 
 
 }
